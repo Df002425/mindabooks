@@ -213,9 +213,72 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 /* Notification bell pulse */
 .notif-bell-pulse{animation:bellPulse .6s ease 3}
 @keyframes bellPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+
+/* LOGIN SCREEN */
+#admin-login-screen{position:fixed;inset:0;background:#060e1e;z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-box{width:100%;max-width:340px;background:#0d1b2e;border:1px solid #1a2d44;border-radius:16px;padding:32px 24px;text-align:center}
+.login-logo{font-size:28px;font-weight:900;margin-bottom:4px;letter-spacing:-.5px}
+.login-logo span{color:#00d9a0}
+.login-sub{font-size:13px;color:#607890;margin-bottom:28px}
+.login-label{font-size:11px;font-weight:700;color:#607890;text-transform:uppercase;letter-spacing:.5px;text-align:left;margin-bottom:6px}
+.login-inp{width:100%;background:#112240;border:1.5px solid #1a2d44;border-radius:10px;padding:13px 16px;font-size:15px;color:#fff;outline:none;font-family:inherit;margin-bottom:14px;letter-spacing:2px;transition:.2s}
+.login-inp:focus{border-color:#00d9a0}
+.login-btn{width:100%;background:#00d9a0;color:#000;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:.2s;margin-bottom:10px}
+.login-btn:hover{background:#00b880}
+.login-btn:active{transform:scale(.98)}
+.login-err{font-size:12px;color:#ff4466;margin-top:4px;display:none;background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.2);border-radius:6px;padding:8px}
+.login-attempts{font-size:11px;color:#607890;margin-top:8px}
 </style>
 </head>
 <body>
+<div id="admin-login-screen">
+  <div class="login-box">
+    <div class="login-logo">Minda<span>Books</span></div>
+    <div class="login-sub">Painel Administrativo · Acesso Restrito</div>
+    <div class="login-label">Senha de Acesso</div>
+    <input class="login-inp" id="admin-pass-input" type="password" placeholder="••••••••"
+      onkeypress="if(event.key==='Enter')checkAdminPass()"
+      autocomplete="current-password">
+    <button class="login-btn" onclick="checkAdminPass()">🔐 Entrar no Painel</button>
+    <div class="login-err" id="login-err">❌ Senha incorrecta. Tenta novamente.</div>
+    <div class="login-attempts" id="login-attempts"></div>
+  </div>
+</div>
+<script>
+function checkAdminPass() {
+  var inp = document.getElementById('admin-pass-input');
+  var err = document.getElementById('login-err');
+  var att = document.getElementById('login-attempts');
+  var val = inp ? inp.value : '';
+  var STORED_PASS = localStorage.getItem('mb_admin_pass') || 'minda2025';
+
+  if (!val) { if(inp) inp.focus(); return; }
+
+  if (val === STORED_PASS) {
+    var screen = document.getElementById('admin-login-screen');
+    if(screen) screen.style.display = 'none';
+    inp.value = '';
+    if(err) err.style.display = 'none';
+    sessionStorage.setItem('mb_admin_auth', Date.now().toString());
+    if(typeof init === 'function') init();
+    if(typeof initNotifSystem === 'function') setTimeout(initNotifSystem, 1000);
+  } else {
+    window._loginAttempts = (window._loginAttempts || 0) + 1;
+    if(inp) inp.value = '';
+    if(inp) inp.focus();
+    if(err) { err.style.display = 'block'; err.textContent = '❌ Senha incorrecta. Tenta novamente.'; }
+    if(window._loginAttempts >= 5) {
+      if(err) err.textContent = '🚫 Demasiadas tentativas. Aguarda 1 minuto.';
+      if(inp) inp.disabled = true;
+      setTimeout(function(){ window._loginAttempts=0; if(inp) inp.disabled=false; if(err) err.style.display='none'; }, 60000);
+    } else {
+      var left = 5 - window._loginAttempts;
+      if(att) att.textContent = left + ' tentativa' + (left!==1?'s':'') + ' restante' + (left!==1?'s':'');
+    }
+  }
+}
+</script>
+
 
 <!-- LIVE NOTIFICATION CONTAINER -->
 <div class="live-notif" id="live-notif-container"></div>
@@ -988,8 +1051,14 @@ function saveSettings(){
   };
   localStorage.setItem('mb_owner_cfg',JSON.stringify(cfg));
   const np=document.getElementById('cfg-newpass')?.value;
-  if(np&&np.length>=4){PASS=np;document.getElementById('cfg-newpass').value='';}
-  toast('✅ Dados guardados! A loja já mostra os teus números.');
+  if(np&&np.length>=4){
+    ADMIN_PASS=np;
+    localStorage.setItem('mb_admin_pass', np);
+    if(document.getElementById('cfg-newpass')) document.getElementById('cfg-newpass').value='';
+    toast('✅ Dados e senha guardados! Nova senha activa.');
+  } else {
+    toast('✅ Dados guardados! A loja já mostra os teus números.');
+  }
 }
 
 function loadOwnerConfig(){
@@ -1143,7 +1212,21 @@ function testLiveNotif() {
   toast('🔔 Notificação de teste mostrada!');
 }
 
-window.addEventListener('DOMContentLoaded', function(){ init(); setTimeout(initNotifSystem, 1000); });
+
+
+window.addEventListener('DOMContentLoaded', function(){
+  var auth = sessionStorage.getItem('mb_admin_auth');
+  var valid = auth && (Date.now() - parseInt(auth)) < 8*60*60*1000;
+  if (valid) {
+    var screen = document.getElementById('admin-login-screen');
+    if(screen) screen.style.display = 'none';
+    init();
+    setTimeout(initNotifSystem, 1000);
+  } else {
+    var inp = document.getElementById('admin-pass-input');
+    if(inp) setTimeout(function(){ inp.focus(); }, 100);
+  }
+});
 
 document.addEventListener('DOMContentLoaded',function(){
   var oe=document.getElementById('ov-ebook');
@@ -1155,4 +1238,4 @@ document.addEventListener('DOMContentLoaded',function(){
 
 <div id="sale-notif-container"></div>
 </body>
-</html>
+    </html>
