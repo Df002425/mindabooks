@@ -259,7 +259,7 @@ function checkAdminPass() {
     if(screen) screen.style.display = 'none';
     inp.value = '';
     if(err) err.style.display = 'none';
-    sessionStorage.setItem('mb_admin_auth', Date.now().toString());
+    
     if(typeof init === 'function') init();
     if(typeof initNotifSystem === 'function') setTimeout(initNotifSystem, 1000);
   } else {
@@ -1215,17 +1215,10 @@ function testLiveNotif() {
 
 
 window.addEventListener('DOMContentLoaded', function(){
-  var auth = sessionStorage.getItem('mb_admin_auth');
-  var valid = auth && (Date.now() - parseInt(auth)) < 8*60*60*1000;
-  if (valid) {
-    var screen = document.getElementById('admin-login-screen');
-    if(screen) screen.style.display = 'none';
-    init();
-    setTimeout(initNotifSystem, 1000);
-  } else {
-    var inp = document.getElementById('admin-pass-input');
-    if(inp) setTimeout(function(){ inp.focus(); }, 100);
-  }
+  // Always clear session and ask for password
+  sessionStorage.removeItem('mb_admin_auth');
+  var inp = document.getElementById('admin-pass-input');
+  if(inp) setTimeout(function(){ inp.focus(); }, 200);
 });
 
 document.addEventListener('DOMContentLoaded',function(){
@@ -1238,4 +1231,4 @@ document.addEventListener('DOMContentLoaded',function(){
 
 <div id="sale-notif-container"></div>
 </body>
-    </html>
+</html>
