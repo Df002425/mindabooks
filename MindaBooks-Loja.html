@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindaBooks — Ebooks que Transformam a tua Vida</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060e1e;--bg2:#0a1628;--card:#0d1b2e;--card2:#112240;
+  --teal:#00d9a0;--teal2:#00b880;--teal-dim:rgba(0,217,160,.12);
+  --blue:#4488ff;--purple:#8866ff;--red:#ff4466;--yellow:#ffaa00;
+  --text:#fff;--text2:#b0c4d8;--muted:#607890;--border:#1a2d44;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(6,14,30,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-size:18px;font-weight:800;letter-spacing:-.5px;cursor:pointer}
+.nav-logo span{color:var(--teal)}
+.online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--teal);margin-right:6px;box-shadow:0 0 8px var(--teal)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.region-flag{font-size:18px;cursor:pointer;padding:4px;border-radius:6px;background:var(--card);border:1px solid var(--border)}
+.btn-sm{font-size:11px;color:var(--muted);cursor:pointer;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:none;font-family:inherit}
+.btn-sm:hover{color:var(--teal);border-color:var(--teal)}
+.lang-badge{background:var(--teal-dim);border:1px solid rgba(0,217,160,.3);color:var(--teal);font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;cursor:pointer}
+
+/* HERO */
+.hero{background:linear-gradient(160deg,#060e1e 0%,#0a1a2e 40%,#081528 100%);padding:50px 20px 40px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(0,217,160,.06) 0%,transparent 70%);pointer-events:none}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--teal-dim);border:1px solid rgba(0,217,160,.3);color:var(--teal);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:20px}
+.hero h1{font-size:clamp(28px,7vw,52px);font-weight:900;line-height:1.1;margin-bottom:14px;letter-spacing:-1px}
+.hero h1 span{color:var(--teal)}
+.hero p{color:var(--text2);font-size:15px;line-height:1.7;max-width:440px;margin:0 auto 24px}
+.hero-feats{display:flex;flex-direction:column;gap:10px;max-width:360px;margin:0 auto 26px}
+.feat{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 15px;text-align:left}
+.feat-icon{font-size:20px;flex-shrink:0}
+.feat strong{display:block;font-size:13px;font-weight:600}
+.feat span{font-size:11px;color:var(--muted)}
+.hero-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
+.btn-main{background:var(--teal);color:#000;border:none;padding:13px 24px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s}
+.btn-main:hover{background:var(--teal2)}
+.btn-sec{background:none;border:1px solid var(--border);color:var(--text2);padding:13px 24px;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit;transition:.2s}
+.btn-sec:hover{border-color:var(--teal);color:var(--teal)}
+.social-proof{display:flex;align-items:center;justify-content:center;gap:10px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.avatars{display:flex}
+.av{width:28px;height:28px;border-radius:50%;border:2px solid var(--bg);margin-left:-8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+
+/* REGION BANNER */
+.region-banner{display:none;background:linear-gradient(90deg,rgba(0,217,160,.08),rgba(68,136,255,.08));border-bottom:1px solid var(--border);padding:10px 20px;text-align:center;font-size:13px;color:var(--text2)}
+.region-banner.show{display:block}
+.region-banner span{color:var(--teal);font-weight:700}
+
+/* CATALOG */
+.section{padding:36px 20px;max-width:960px;margin:0 auto}
+.section-tag{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
+.section h2{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:14px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.filter-btn{background:var(--card);border:1px solid var(--border);color:var(--text2);padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit;transition:.2s}
+.filter-btn:hover,.filter-btn.on{background:var(--teal-dim);border-color:var(--teal);color:var(--teal)}
+.books-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(min-width:600px){.books-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:800px){.books-grid{grid-template-columns:repeat(4,1fr)}}
+
+/* BOOK CARD */
+.book-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:.2s}
+.book-card:hover{border-color:var(--teal);transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,217,160,.1)}
+.book-cover{height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;font-weight:800;text-align:center;padding:14px;position:relative;color:#fff;overflow:hidden}
+.book-cover::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.07)}
+.book-cover::after{content:'';position:absolute;bottom:-25px;left:-15px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.05)}
+.book-cover .cat-ribbon{position:absolute;top:0;left:0;right:0;height:2px;background:rgba(255,255,255,.2)}
+.book-cover .cat-tag{position:absolute;top:9px;left:0;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);padding:3px 10px 3px 8px;border-radius:0 8px 8px 0;font-size:8px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.95)}
+.book-cover .book-emoji{font-size:36px;margin-bottom:8px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.5));position:relative;z-index:1}
+.book-cover .book-name{font-size:11px;font-weight:800;line-height:1.3;text-shadow:0 1px 8px rgba(0,0,0,.6);padding:0 4px;position:relative;z-index:1}
+.cover-hint{position:absolute;bottom:0;left:0;right:0;background:rgba(0,217,160,.88);color:#000;font-size:11px;font-weight:700;text-align:center;padding:7px;opacity:0;transition:.25s;letter-spacing:.5px;z-index:2}
+.book-card:hover .cover-hint{opacity:1}
+.book-info{padding:10px}
+.book-cat{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--teal);margin-bottom:3px}
+.book-title{font-size:12px;font-weight:700;line-height:1.4;margin-bottom:4px}
+.book-snippet{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.book-footer{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.book-price-wrap .book-price{font-size:14px;font-weight:800;color:var(--teal)}
+.book-price-wrap .book-price-orig{font-size:9px;color:var(--muted)}
+.btn-buy-card{background:var(--teal);border:none;color:#000;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;white-space:nowrap}
+.btn-buy-card:hover{background:var(--teal2)}
+
+/* HOW IT WORKS */
+.how-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:40px 20px}
+.how-inner{max-width:700px;margin:0 auto}
+.how-steps{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.how-step{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:14px}
+.how-num{width:36px;height:36px;border-radius:50%;background:var(--teal);color:#000;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.how-info strong{display:block;font-size:13px;font-weight:700;margin-bottom:2px}
+.how-info span{font-size:12px;color:var(--muted)}
+
+/* PAYMENT METHODS */
+.pay-section{background:var(--bg2);padding:40px 20px}
+.pay-inner{max-width:700px;margin:0 auto}
+.pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+@media(min-width:500px){.pay-grid{grid-template-columns:repeat(3,1fr)}}
+.pay-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.pay-card .pay-icon{font-size:26px;margin-bottom:6px}
+.pay-card strong{display:block;font-size:12px;font-weight:700;margin-bottom:3px}
+.pay-card span{font-size:10px;color:var(--muted)}
+.pay-card .pay-badge{display:inline-block;margin-top:5px;padding:2px 7px;border-radius:6px;font-size:9px;font-weight:700}
+.inst{background:rgba(0,217,160,.08);border:1px solid rgba(0,217,160,.2);border-radius:10px;padding:14px 16px;margin-top:14px;font-size:13px;color:var(--text2)}
+.inst strong{color:var(--teal)}
+
+/* REGIONS */
+.regions-section{padding:40px 20px;max-width:700px;margin:0 auto}
+.region-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}
+@media(min-width:500px){.region-cards{grid-template-columns:repeat(3,1fr)}}
+.region-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px;text-align:center}
+.region-card .flag{font-size:26px;margin-bottom:6px}
+.region-card strong{display:block;font-size:12px;font-weight:700;margin-bottom:2px}
+.region-card span{font-size:10px;color:var(--muted)}
+.region-card .currency{font-size:11px;color:var(--teal);font-weight:700;margin-top:4px}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:30px 20px;text-align:center}
+.footer-logo{font-size:20px;font-weight:800;margin-bottom:6px}
+.footer-logo span{color:var(--teal)}
+.footer-sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+.footer-badges{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.fbadge{background:var(--card);border:1px solid var(--border);padding:5px 12px;border-radius:6px;font-size:11px;color:var(--text2)}
+.footer-copy{font-size:11px;color:var(--muted)}
+
+/* PREVIEW MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;padding:16px;overflow-y:auto;align-items:flex-start;justify-content:center}
+.overlay.open{display:flex}
+.modal{width:100%;max-width:500px;margin:auto;background:var(--card2);border-radius:14px;overflow:hidden;animation:slideUp .3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.prev-cover{height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;position:relative;overflow:hidden}
+.prev-body{padding:20px}
+.prev-body h2{font-size:19px;font-weight:800;margin-bottom:4px;letter-spacing:-.5px}
+.prev-meta{font-size:11px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.prev-meta span{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(0,217,160,.2);padding:2px 7px;border-radius:8px;font-weight:600;font-size:10px}
+.prev-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+.prev-content{background:var(--card);border-radius:10px;padding:14px;max-height:280px;overflow-y:auto;margin-bottom:16px}
+.prev-section-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:8px}
+.prev-index-item{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:11px;color:var(--text2)}
+.prev-index-item:last-child{border:none}
+.prev-index-item.intro{color:var(--teal);font-weight:600}
+.prev-excerpt{background:rgba(0,217,160,.06);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:10px 12px;font-size:12px;color:var(--text2);line-height:1.7;margin-top:12px}
+.prev-footer{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.price-display{flex:1}
+.price-display .price-main{font-size:22px;font-weight:900;color:var(--teal)}
+.price-display .price-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.btn-close{background:none;border:1px solid var(--border);color:var(--muted);padding:11px 16px;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit}
+.btn-hotmart{background:linear-gradient(135deg,#00d9a0,#4488ff);color:#fff;border:none;padding:12px 22px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:8px;transition:.2s}
+.btn-hotmart:hover{opacity:.9;transform:scale(1.02)}
+
+/* ASSISTANT CHAT */
+.chat-fab{position:fixed;bottom:20px;right:20px;z-index:150;background:linear-gradient(135deg,#00d9a0,#4488ff);color:#fff;border:none;width:52px;height:52px;border-radius:50%;cursor:pointer;box-shadow:0 4px 24px rgba(0,217,160,.45);display:flex;align-items:center;justify-content:center;transition:.2s}
+.chat-fab:hover{transform:scale(1.08)}
+.chat-window{position:fixed;bottom:82px;right:16px;z-index:150;width:300px;max-width:calc(100vw - 32px);background:var(--card2);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:none;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.chat-window.open{display:flex}
+.chat-head{background:var(--card);padding:11px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.chat-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#00d9a0,#4488ff);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.chat-head-info strong{display:block;font-size:12px;font-weight:700}
+.chat-head-info em{font-style:normal;font-size:10px;color:var(--teal)}
+.close-chat{background:none;border:none;color:var(--muted);cursor:pointer;margin-left:auto;font-size:16px}
+.chat-msgs{height:220px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.cmsg{max-width:86%;padding:8px 11px;border-radius:10px;font-size:12px;line-height:1.5}
+.cmsg.bot{background:var(--card);color:var(--text2);align-self:flex-start;border-radius:10px 10px 10px 2px}
+.cmsg.user{background:var(--teal);color:#000;align-self:flex-end;border-radius:10px 10px 2px 10px;font-weight:500}
+.chat-inp-row{padding:8px;border-top:1px solid var(--border);display:flex;gap:6px}
+.chat-inp{flex:1;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;color:var(--text);outline:none;font-family:inherit}
+.chat-inp::placeholder{color:var(--muted)}
+.chat-send{background:var(--teal);color:#000;border:none;width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:14px;flex-shrink:0}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--border);color:var(--text);padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;display:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.5);border-left:3px solid var(--teal)}
+.toast.show{display:block;animation:ti .3s ease}
+@keyframes ti{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* PAYMENT DETAILS PANEL */
+.pay-detail-panel{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:12px;animation:fadeIn .3s ease}
+.pay-detail-panel.show{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.pdp-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.pdp-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.pdp-method-name{font-size:15px;font-weight:800}
+.pdp-method-sub{font-size:11px;color:var(--muted)}
+.pdp-row{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.pdp-field{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.pdp-field-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.pdp-field-value{font-size:15px;font-weight:800;color:var(--text);font-family:monospace;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pdp-field-value.highlight{color:var(--teal);font-size:17px}
+.copy-btn{background:var(--teal-dim);border:1px solid rgba(0,217,160,.3);color:var(--teal);font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;font-family:inherit}
+.copy-btn:hover{background:var(--teal);color:#000}
+.pdp-steps{background:rgba(0,217,160,.06);border:1px solid rgba(0,217,160,.15);border-radius:10px;padding:12px;margin-bottom:14px}
+.pdp-steps-title{font-size:11px;font-weight:700;color:var(--teal);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.pdp-step{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:12px;color:var(--text2);line-height:1.5}
+.pdp-step:last-child{margin-bottom:0}
+.pdp-step-num{width:18px;height:18px;border-radius:50%;background:var(--teal);color:#000;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.pdp-amount-box{background:linear-gradient(135deg,rgba(0,217,160,.12),rgba(68,136,255,.08));border:1px solid rgba(0,217,160,.3);border-radius:10px;padding:14px;text-align:center;margin-bottom:14px}
+.pdp-amount-label{font-size:11px;color:var(--muted);margin-bottom:4px}
+.pdp-amount-val{font-size:28px;font-weight:900;color:var(--teal)}
+.pdp-amount-usd{font-size:11px;color:var(--muted);margin-top:2px}
+.btn-confirm-pay{width:100%;background:var(--teal);color:#000;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-confirm-pay:hover{background:var(--teal2)}
+.pdp-warning{font-size:11px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5}
+
+/* CART MODAL UPGRADE */
+.cart-modal-box{background:var(--card2);padding:22px;border-radius:14px;width:100%;max-width:480px;margin:auto;animation:slideUp .3s ease}
+.pay-opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.pay-opt-btn{display:flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;font-family:inherit;color:var(--text);font-size:13px;font-weight:600;transition:.2s}
+.pay-opt-btn:hover{border-color:var(--teal);background:var(--teal-dim)}
+.pay-opt-btn.selected{border-color:var(--teal);background:var(--teal-dim);color:var(--teal)}
+.pay-opt-icon{font-size:18px;flex-shrink:0}
+.pay-opt-badge{margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px}
+
+/* SUCCESS DOWNLOAD */
+.success-box{padding:30px 18px;text-align:center}
+.success-box .s-icon{font-size:54px;margin-bottom:14px}
+.success-box h2{font-size:21px;font-weight:800;color:var(--teal);margin-bottom:8px}
+.success-box p{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+.order-ref{background:var(--card);border-radius:8px;padding:10px;font-family:monospace;font-size:13px;font-weight:700;color:var(--teal);margin-bottom:14px;letter-spacing:1px}
+.dl-btn{width:100%;background:linear-gradient(135deg,var(--teal),var(--teal2));color:#000;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
+.dl-btn:disabled{background:var(--border);color:var(--muted);cursor:not-allowed}
+.dl-remain{font-size:11px;color:var(--muted);margin-bottom:10px}
+
+/* OWNER MODE */
+#owner-bar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#ff6b00,#ff9500);color:#000;padding:8px 16px;font-size:12px;font-weight:700;display:none;align-items:center;gap:10px;flex-wrap:wrap}
+#owner-bar.show{display:flex}
+.owner-badge{background:#000;color:#ff9500;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800;letter-spacing:1px}
+.owner-btn{background:rgba(0,0,0,.2);border:1px solid rgba(0,0,0,.3);color:#000;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+.owner-btn:hover{background:rgba(0,0,0,.35)}
+#owner-login{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9998;display:none;align-items:center;justify-content:center}
+#owner-login.show{display:flex}
+</style>
+</head>
+<body>
+
+<!-- REGION BANNER -->
+<div class="region-banner" id="region-banner">
+  A visualizar em: <span id="region-name">🌍 Global</span> &nbsp;·&nbsp; Preço: <span id="region-price-display">$4 USD</span> &nbsp;·&nbsp; Moeda: <span id="region-currency-display">USD</span>
+</div>
+
+<nav>
+  <div class="nav-logo"><span class="online-dot"></span>Minda<span>Books</span></div>
+  <div class="nav-right">
+    <span class="region-flag" id="region-flag" title="A tua região" onclick="showRegionInfo()">🌍</span>
+    <span class="lang-badge" id="lang-badge">PT</span>
+    <button class="btn-sm" onclick="window.open('MindaBooks-Admin.html','_self')">⚙ Admin</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">🌍 Global · Moçambique · Angola · Brasil · Portugal · Europa · EUA</div>
+  <h1>Ebooks que<br><span>Transformam</span><br>a tua Vida</h1>
+  <p id="hero-sub">A MindaBooks é a loja de ebooks em Português para o mundo. Conteúdo prático entregue directamente no teu email em segundos após o pagamento.</p>
+  <div class="hero-feats">
+    <div class="feat"><div class="feat-icon">⚡</div><div><strong>Entrega imediata por email</strong><span id="feat1-sub">PDF enviado automaticamente após pagamento</span></div></div>
+    <div class="feat"><div class="feat-icon" id="price-icon">💰</div><div><strong id="price-feat">A partir de $4 USD</strong><span id="price-sub">Preço único · Câmbio automático para a tua moeda</span></div></div>
+    <div class="feat"><div class="feat-icon">🔒</div><div><strong>Compra 100% segura</strong><span>Processado pelo Hotmart · Garantia de 7 dias</span></div></div>
+  </div>
+  <div class="hero-btns">
+    <button class="btn-main" onclick="document.querySelector('.section').scrollIntoView({behavior:'smooth'})">📚 Ver Ebooks</button>
+    <button class="btn-sec" onclick="document.querySelector('.how-section').scrollIntoView({behavior:'smooth'})">ℹ Como Funciona</button>
+  </div>
+  <div class="social-proof">
+    <div class="avatars">
+      <div class="av" style="background:#e74c3c;margin-left:0">J</div>
+      <div class="av" style="background:#2ecc71">M</div>
+      <div class="av" style="background:#f39c12">A</div>
+      <div class="av" style="background:#9b59b6">C</div>
+      <div class="av" style="background:#3498db">S</div>
+    </div>
+    <span>⭐⭐⭐⭐⭐ +500 leitores satisfeitos em todo o mundo</span>
+  </div>
+</div>
+
+<!-- CATALOG -->
+<div class="section">
+  <div class="section-tag">📚 Catálogo Completo</div>
+  <h2>Ebooks Disponíveis</h2>
+  <div class="filters">
+    <button class="filter-btn on" onclick="setFilter('Todos',this)">Todos</button>
+    <button class="filter-btn" onclick="setFilter('Motivação',this)">💪 Motivação</button>
+    <button class="filter-btn" onclick="setFilter('Saúde',this)">🧠 Saúde</button>
+    <button class="filter-btn" onclick="setFilter('Finanças',this)">💰 Finanças</button>
+    <button class="filter-btn" onclick="setFilter('Produtividade',this)">⚡ Produtividade</button>
+    <button class="filter-btn" onclick="setFilter('Negócios',this)">🚀 Negócios</button>
+    <button class="filter-btn" onclick="setFilter('Fé',this)">🕯️ Fé</button>
+    <button class="filter-btn" onclick="setFilter('Relacionamentos',this)">❤️ Relacionamentos</button>
+    <button class="filter-btn" onclick="setFilter('Vida',this)">🌱 Vida</button>
+  </div>
+  <div class="books-grid" id="books-grid"></div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="how-section">
+  <div class="how-inner">
+    <div class="section-tag">ℹ Como Funciona</div>
+    <h2 style="font-size:22px;font-weight:800;margin-bottom:0">3 Passos Simples</h2>
+    <div class="how-steps">
+      <div class="how-step"><div class="how-num">1</div><div class="how-info"><strong>Escolhe o teu Ebook</strong><span>Navega pelo catálogo, lê o resumo e escolhe o que mais te interessa</span></div></div>
+      <div class="how-step"><div class="how-num">2</div><div class="how-info"><strong>Paga em segurança pelo Hotmart</strong><span>Cartão, PayPal, M-Pesa, E-Mola, Pix, Boleto — na tua moeda local</span></div></div>
+      <div class="how-step"><div class="how-num">3</div><div class="how-info"><strong>Recebe no Email Imediatamente</strong><span>O Hotmart envia o PDF automaticamente para o teu email em segundos</span></div></div>
+    </div>
+    <div style="margin-top:16px;background:var(--teal-dim);border:1px solid rgba(0,217,160,.2);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text2)">
+      🔐 <strong style="color:var(--teal)">Processamento seguro pelo Hotmart</strong> — plataforma líder de ebooks em Português com +30 milhões de compradores e pagamentos em todo o mundo.
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT METHODS BY REGION -->
+<div class="pay-section">
+  <div class="pay-inner">
+    <div class="section-tag">💳 Métodos de Pagamento</div>
+    <h2 style="font-size:22px;font-weight:800;margin-bottom:4px">Paga na tua Moeda Local</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:0">O Hotmart converte automaticamente o preço para a tua moeda.</p>
+    <div class="pay-grid">
+      <div class="pay-card"><div class="pay-icon">📱</div><strong>M-Pesa</strong><span>Moçambique</span><div class="pay-badge" style="background:rgba(0,217,160,.15);color:var(--teal)">INSTANT</div></div>
+      <div class="pay-card"><div class="pay-icon">💚</div><strong>E-Mola</strong><span>Moçambique</span><div class="pay-badge" style="background:rgba(0,217,160,.15);color:var(--teal)">INSTANT</div></div>
+      <div class="pay-card"><div class="pay-icon">🅿️</div><strong>PayPal</strong><span>Internacional</span><div class="pay-badge" style="background:rgba(68,136,255,.15);color:var(--blue)">GLOBAL</div></div>
+      <div class="pay-card"><div class="pay-icon">💳</div><strong>Cartão</strong><span>Visa · Mastercard</span><div class="pay-badge" style="background:rgba(136,102,255,.15);color:var(--purple)">3D SECURE</div></div>
+      <div class="pay-card"><div class="pay-icon">⚡</div><strong>Pix</strong><span>Brasil</span><div class="pay-badge" style="background:rgba(0,217,160,.15);color:var(--teal)">INSTANT</div></div>
+      <div class="pay-card"><div class="pay-icon">📄</div><strong>Boleto</strong><span>Brasil</span><div class="pay-badge" style="background:rgba(255,170,0,.15);color:var(--yellow)">1-3 DIAS</div></div>
+    </div>
+    <div class="inst">💰 <strong>O teu pagamento vai directamente para o vendedor via Hotmart</strong> — podes sacar para conta bancária, M-Pesa ou E-Mola a qualquer momento no painel Hotmart.</div>
+  </div>
+</div>
+
+<!-- REGIONS SUPPORTED -->
+<div class="regions-section">
+  <div class="section-tag">🌍 Regiões Suportadas</div>
+  <h2 style="font-size:20px;font-weight:800;margin-bottom:4px">Disponível em Todo o Mundo</h2>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:0">Preço convertido automaticamente para a moeda local.</p>
+  <div class="region-cards">
+    <div class="region-card"><div class="flag">🇲🇿</div><strong>Moçambique</strong><span>M-Pesa · E-Mola · Cartão</span><div class="currency">MZN (Mt)</div></div>
+    <div class="region-card"><div class="flag">🇦🇴</div><strong>Angola</strong><span>Multicaixa · Cartão · PayPal</span><div class="currency">AOA (Kz)</div></div>
+    <div class="region-card"><div class="flag">🇧🇷</div><strong>Brasil</strong><span>Pix · Boleto · Cartão</span><div class="currency">BRL (R$)</div></div>
+    <div class="region-card"><div class="flag">🇵🇹</div><strong>Portugal</strong><span>MB Way · Cartão · PayPal</span><div class="currency">EUR (€)</div></div>
+    <div class="region-card"><div class="flag">🇺🇸</div><strong>Estados Unidos</strong><span>Cartão · PayPal</span><div class="currency">USD ($)</div></div>
+    <div class="region-card"><div class="flag">🌍</div><strong>Europa</strong><span>Cartão · PayPal · Sepa</span><div class="currency">EUR (€)</div></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">Minda<span>Books</span></div>
+  <div class="footer-sub">Loja de Ebooks em Português · Pagamentos via Hotmart · Global</div>
+  <div class="footer-badges">
+    <span class="fbadge">🔒 Hotmart Secure</span>
+    <span class="fbadge">✅ 7 Dias Garantia</span>
+    <span class="fbadge">⚡ Entrega por Email</span>
+    <span class="fbadge">🌍 +6 Países</span>
+  </div>
+  <div class="footer-copy">© 2025 MindaBooks · Powered by Hotmart · Todos os direitos reservados</div>
+</footer>
+
+<!-- PREVIEW MODAL -->
+<div class="overlay" id="ov-preview">
+  <div class="modal">
+    <div class="prev-cover" id="prev-cover"></div>
+    <div class="prev-body">
+      <h2 id="prev-title"></h2>
+      <div class="prev-meta">
+        <span id="prev-cat"></span>
+        <span id="prev-pages"></span>
+        <span>MindaBooks</span>
+      </div>
+      <div class="prev-desc" id="prev-desc"></div>
+      <div class="prev-content" id="prev-content"></div>
+      <div class="prev-footer">
+        <div class="price-display">
+          <div class="price-main" id="prev-price-local"></div>
+          <div class="price-sub" id="prev-price-usd"></div>
+        </div>
+        <button class="btn-close" onclick="closeOv('ov-preview')">Fechar</button>
+      </div>
+      <div id="prev-buy-btns" style="display:flex;flex-direction:column;gap:8px;padding:0 20px 20px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ASSISTANT -->
+<button class="chat-fab" onclick="toggleChat()" title="Assistente MindaBooks">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+</button>
+<div class="chat-window" id="chat-window">
+  <div class="chat-head">
+    <div class="chat-av">✦</div>
+    <div class="chat-head-info"><strong>Assistente Minda</strong><em>● Online · Pronta para ajudar</em></div>
+    <button class="close-chat" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-msgs" id="chat-msgs"></div>
+  <div class="chat-inp-row">
+    <input class="chat-inp" id="chat-inp" placeholder="Como posso ajudar?" onkeypress="if(event.key==='Enter')sendChat()">
+    <button class="chat-send" onclick="sendChat()">➤</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== REGION DETECTION =====
+const REGIONS = {
+  'pt-MZ': { name:'🇲🇿 Moçambique', flag:'🇲🇿', currency:'MZN', symbol:'Mt', rate:63, lang:'pt', pay:['M-Pesa','E-Mola','Cartão'] },
+  'pt-AO': { name:'🇦🇴 Angola',      flag:'🇦🇴', currency:'AOA', symbol:'Kz', rate:830, lang:'pt', pay:['Multicaixa','Cartão','PayPal'] },
+  'pt-BR': { name:'🇧🇷 Brasil',       flag:'🇧🇷', currency:'BRL', symbol:'R$', rate:5.1, lang:'pt-BR', pay:['Pix','Boleto','Cartão'] },
+  'pt-PT': { name:'🇵🇹 Portugal',     flag:'🇵🇹', currency:'EUR', symbol:'€',  rate:0.92, lang:'pt-PT', pay:['MB Way','Cartão','PayPal'] },
+  'en-US': { name:'🇺🇸 United States',flag:'🇺🇸', currency:'USD', symbol:'$',  rate:1, lang:'en', pay:['Card','PayPal'] },
+  'en-EU': { name:'🌍 Europe',        flag:'🌍', currency:'EUR', symbol:'€',  rate:0.92, lang:'en', pay:['Card','PayPal','Sepa'] },
+  'default':{ name:'🌍 Global',       flag:'🌍', currency:'USD', symbol:'$',  rate:1, lang:'pt', pay:['Card','PayPal'] },
+};
+
+let currentRegion = REGIONS['default'];
+let activeFilter = 'Todos';
+let chatOpen = false;
+
+function detectRegion() {
+  const lang = navigator.language || 'en';
+  const tz   = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+  let key = 'default';
+  if (tz.includes('Maputo') || lang === 'pt-MZ') key = 'pt-MZ';
+  else if (tz.includes('Luanda') || lang === 'pt-AO') key = 'pt-AO';
+  else if (tz.includes('Sao_Paulo') || tz.includes('America/Fortaleza') || lang.startsWith('pt-BR')) key = 'pt-BR';
+  else if (tz.includes('Lisbon') || lang === 'pt-PT') key = 'pt-PT';
+  else if (tz.includes('America') && lang.startsWith('en')) key = 'en-US';
+  else if (lang.startsWith('pt')) key = 'pt-MZ'; // default pt → Mozambique
+  currentRegion = REGIONS[key] || REGIONS['default'];
+  applyRegion();
+}
+
+function applyRegion() {
+  const r = currentRegion;
+  document.getElementById('region-flag').textContent = r.flag;
+  document.getElementById('lang-badge').textContent = r.lang.toUpperCase().slice(0,2);
+  document.getElementById('region-banner').classList.add('show');
+  document.getElementById('region-name').textContent = r.name;
+  document.getElementById('region-price-display').textContent = '$4 USD';
+  document.getElementById('region-currency-display').textContent = r.currency;
+  document.getElementById('price-feat').textContent = 'A partir de $4 USD';
+  document.getElementById('price-sub').textContent = 'Preço em ' + r.currency + ' · Processado pelo Hotmart';
+}
+
+function showRegionInfo() { toast('Região detectada: ' + currentRegion.name + ' · ' + currentRegion.currency); }
+
+function formatPrice(usd) {
+  const r = currentRegion;
+  const val = usd * r.rate;
+  return r.symbol + (val >= 10 ? val.toFixed(0) : val.toFixed(2));
+}
+
+// ===== BOOKS DATA =====
+const COVERS = [
+  'linear-gradient(135deg,#00b860,#00d9a0)',  /* Motivação — verde vibrante */
+  'linear-gradient(135deg,#2255dd,#4488ff)',  /* Vida — azul vibrante */
+  'linear-gradient(135deg,#cc2200,#ff5533)',  /* Finanças — vermelho vibrante */
+  'linear-gradient(135deg,#7722cc,#aa44ff)',  /* Produtividade — roxo vibrante */
+  'linear-gradient(135deg,#00888a,#00cccc)',  /* Negócios — ciano vibrante */
+  'linear-gradient(135deg,#cc7700,#ffaa00)',  /* Saúde — amarelo/laranja */
+  'linear-gradient(135deg,#1133bb,#3366ff)',  /* Fé — azul índigo */
+  'linear-gradient(135deg,#bb1155,#ff3388)',  /* Relacionamentos — rosa vibrante */
+];
+
+// FAMBAPAY — Moçambique & Angola (M-Pesa, E-Mola, Cartão)
+// Substitui pelos links reais após criar os produtos no Fambapay
+const FAMBAPAY_LINKS = {
+  1: 'https://fambapay.com/SEU-LINK-EBOOK-1',
+  2: 'https://fambapay.com/SEU-LINK-EBOOK-2',
+  3: 'https://fambapay.com/SEU-LINK-EBOOK-3',
+  4: 'https://fambapay.com/SEU-LINK-EBOOK-4',
+  5: 'https://fambapay.com/SEU-LINK-EBOOK-5',
+  6: 'https://fambapay.com/SEU-LINK-EBOOK-6',
+  7: 'https://fambapay.com/SEU-LINK-EBOOK-7',
+  8: 'https://fambapay.com/SEU-LINK-EBOOK-8',
+};
+
+// HOTMART — Brasil, Portugal, EUA, Europa (Pix, Boleto, PayPal, Cartão)
+// Substitui pelos links reais após criar os produtos no Hotmart
+const HOTMART_LINKS = {
+  1: 'https://pay.hotmart.com/SEU-LINK-EBOOK-1',
+  2: 'https://pay.hotmart.com/SEU-LINK-EBOOK-2',
+  3: 'https://pay.hotmart.com/SEU-LINK-EBOOK-3',
+  4: 'https://pay.hotmart.com/SEU-LINK-EBOOK-4',
+  5: 'https://pay.hotmart.com/SEU-LINK-EBOOK-5',
+  6: 'https://pay.hotmart.com/SEU-LINK-EBOOK-6',
+  7: 'https://pay.hotmart.com/SEU-LINK-EBOOK-7',
+  8: 'https://pay.hotmart.com/SEU-LINK-EBOOK-8',
+};
+
+// Regiões Fambapay vs Hotmart
+const FAMBAPAY_REGIONS = ['pt-MZ','pt-AO'];
+const HOTMART_REGIONS  = ['pt-BR','pt-PT','en-US','en-EU','default'];
+
+const BOOKS = [
+  {id:1,title:'Mente Imbatível',cat:'Motivação',price:4,emoji:'💪',color:COVERS[0],pages:16,
+   desc:'Desenvolve uma mentalidade de alta performance para superar qualquer obstáculo da vida.',
+   preview:'A mente humana é o instrumento mais poderoso que existe. Cada pensamento que tens molda a tua realidade, as tuas decisões e os teus resultados.',
+   indice:['Introdução — O Poder da Mente','Cap. 1 — Mentalidade de Crescimento','Cap. 2 — Vencer o Medo e a Dúvida','Cap. 3 — A Disciplina dos Vencedores','Cap. 4 — Rotinas de Alta Performance','Cap. 5 — Resiliência: Levantar Após a Queda','Cap. 6 — Visualização e Afirmações','Conclusão — A Tua Mente, o Teu Destino'],
+   excerpt:'Carol Dweck identificou dois tipos de mentalidade: a fixa e a de crescimento. Quem tem mentalidade de crescimento acredita que pode melhorar em qualquer área com esforço. O primeiro passo é identificar as tuas crenças limitantes e substituí-las por afirmações de crescimento...'},
+  {id:2,title:'Vida Real, Soluções Criativas',cat:'Vida',price:4,emoji:'💡',color:COVERS[1],pages:17,
+   desc:'Estratégias práticas e criativas para resolver os desafios do quotidiano com inteligência.',
+   preview:'A vida real raramente segue o plano. Este ebook nasceu de histórias reais de pessoas que encontraram saídas criativas para problemas difíceis.',
+   indice:['Introdução — Quando a Vida Não Segue o Plano','Cap. 1 — Pensamento Lateral na Prática','Cap. 2 — Resolver Conflitos sem Desgaste','Cap. 3 — Gestão de Tempo com Recursos Limitados','Cap. 4 — Criatividade no Dia a Dia','Cap. 5 — Tomar Decisões sob Pressão','Cap. 6 — Transformar Problemas em Oportunidades','Conclusão — A Vida como Campo de Treino'],
+   excerpt:'Edward de Bono criou o pensamento lateral: a arte de resolver problemas por ângulos inesperados. A técnica dos 6 Chapéus permite ver o mesmo problema por 6 perspectivas diferentes — dados, emoções, riscos, oportunidades, criatividade e organização...'},
+  {id:3,title:'Finanças Pessoais Agora',cat:'Finanças',price:4,emoji:'💰',color:COVERS[2],pages:13,
+   desc:'O guia definitivo para gerir o dinheiro, eliminar dívidas e começar a investir.',
+   preview:'Ninguém nos ensinou nas escolas como o dinheiro realmente funciona. Com exemplos em Meticais e outras moedas, vais aprender a controlar o teu dinheiro.',
+   indice:['Introdução — O Que Ninguém Te Ensinou','Cap. 1 — Orçamento Pessoal: O Mapa do Teu Dinheiro','Cap. 2 — Como Eliminar Dívidas de Vez','Cap. 3 — A Regra 50-30-20 Adaptada','Cap. 4 — Criar a Tua Reserva de Emergência','Cap. 5 — Investimentos Para Iniciantes','Cap. 6 — Mentalidade de Abundância','Conclusão — O Teu Plano em 90 Dias'],
+   excerpt:'Um orçamento é simplesmente um plano para o teu dinheiro. Sem ele, o dinheiro desaparece sem explicação. Começa por registar todas as receitas e despesas. Dica: paga-te a ti mesmo primeiro — transfere imediatamente uma quantia para poupança antes de gastar qualquer coisa...'},
+  {id:4,title:'Foco Total',cat:'Produtividade',price:4,emoji:'⚡',color:COVERS[3],pages:13,
+   desc:'Elimina as distrações modernas e alcança resultados extraordinários com menos tempo.',
+   preview:'Vivemos na era da distracção permanente. O telemóvel, as notificações, as redes sociais — e o dia passa sem que tenhamos feito o que realmente importava.',
+   indice:['Introdução — A Crise da Atenção','Cap. 1 — Como o Cérebro Processa o Foco','Cap. 2 — Eliminar as Distrações Digitais','Cap. 3 — O Deep Work na Prática','Cap. 4 — O Método 1-3-5 de Prioridades','Cap. 5 — Blocos de Tempo e Rotinas','Cap. 6 — Recuperação: Descanso como Ferramenta','Conclusão — A Tua Semana Ideal'],
+   excerpt:'O cérebro demora em média 23 minutos para regressar ao nível de concentração após uma interrupção. Se recebes 10 notificações por hora, matematicamente nunca entras em foco real durante o dia. A solução começa pelo Protocolo Digital Limpo...'},
+  {id:5,title:'Negócio do Zero',cat:'Negócios',price:4,emoji:'🚀',color:COVERS[4],pages:14,
+   desc:'O guia completo para criar, lançar e escalar um negócio lucrativo com pouco investimento.',
+   preview:'Moçambique está em plena transformação económica. A classe média cresce e a internet expande-se. Este é o momento certo para empreender.',
+   indice:['Introdução — O Mercado que Está a Acordar','Cap. 1 — Encontrar a Tua Ideia de Negócio','Cap. 2 — Validar Antes de Investir','Cap. 3 — O Modelo de Negócio Simplificado','Cap. 4 — Marketing com Zero Orçamento','Cap. 5 — Vendas: Da Primeira à Recorrente','Cap. 6 — Finanças do Negócio','Cap. 7 — Escalar de Forma Sustentável','Conclusão — O Teu Plano de 90 Dias'],
+   excerpt:'A melhor ideia de negócio não é a mais original — é aquela que resolve um problema real que pessoas à tua volta têm. O método dos 3 círculos: o que sabes fazer bem, o que o mercado precisa, e o que as pessoas pagam. A tua ideia ideal está na intersecção dos 3...'},
+  {id:6,title:'Corpo e Alma Saudáveis',cat:'Saúde',price:4,emoji:'🧠',color:COVERS[5],pages:14,
+   desc:'Guia prático de saúde física e mental adaptado à realidade africana e lusófona.',
+   preview:'Saúde não é ausência de doença — é vitalidade, energia e paz interior. Um plano completo usando recursos disponíveis em qualquer país de língua portuguesa.',
+   indice:['Introdução — A Saúde como Investimento','Cap. 1 — Alimentação Saudável com Produtos Locais','Cap. 2 — Exercício Físico sem Ginásio','Cap. 3 — Sono: O Pilar Esquecido','Cap. 4 — Saúde Mental e Gestão do Stress','Cap. 5 — Hidratação e os seus Segredos','Cap. 6 — Prevenção de Doenças Comuns','Conclusão — O Teu Plano de 30 Dias'],
+   excerpt:'Moçambique tem uma riqueza alimentar extraordinária: mandioca, folhas de mandioca (matapa), amendoim, feijão, peixe fresco e frutas tropicais — todos alimentos de alto valor nutricional. O problema não está nos alimentos locais — está na forma como os preparamos...'},
+  {id:7,title:'Fé que Move',cat:'Fé',price:4,emoji:'🕯️',color:COVERS[6],pages:14,
+   desc:'Princípios espirituais práticos para viver com propósito e encontrar paz interior.',
+   preview:'A fé não é uma muleta para os fracos — é a força que move aqueles que acreditam no invisível antes que ele se torne visível.',
+   indice:['Introdução — Fé: O Que é e o Que Não é','Cap. 1 — A Oração como Transformação','Cap. 2 — Propósito: Por Que Estás Aqui','Cap. 3 — Superar Crises com Fé','Cap. 4 — Perdão: A Liberdade Inesperada','Cap. 5 — Comunidade e Crescimento Espiritual','Cap. 6 — Fé e Prosperidade','Conclusão — Viver com Fé no Dia a Dia'],
+   excerpt:'A oração autêntica não é um monólogo — é um diálogo. A neurociência do silêncio revela que períodos regulares de quietude interior produzem alterações mensuráveis no cérebro: redução do cortisol, aumento da serotonina e maior equilíbrio emocional...'},
+  {id:8,title:'Relacionamentos que Duram',cat:'Relacionamentos',price:4,emoji:'❤️',color:COVERS[7],pages:20,
+   desc:'Como construir relações saudáveis, comunicar com amor e transformar conflitos em conexão.',
+   preview:'Os relacionamentos são a base da felicidade humana. Ninguém nos ensinou como amar de forma saudável ou como comunicar sem ferir.',
+   indice:['Introdução — Ninguém Nasce a Saber Amar','Cap. 1 — As 5 Linguagens do Amor','Cap. 2 — Comunicação sem Conflito','Cap. 3 — Limites Saudáveis nas Relações','Cap. 4 — Reconstruir a Confiança','Cap. 5 — Relacionamentos em Tempos de Crise','Cap. 6 — Amor Próprio como Base','Conclusão — O Relacionamento que Mereces'],
+   excerpt:'Gary Chapman identificou 5 formas pelas quais as pessoas expressam e recebem amor: palavras de afirmação, actos de serviço, presença de qualidade, toque físico e presentes. O problema: a maioria ama os outros na SUA linguagem — não na do outro...'},
+];
+
+// ===== RENDER BOOKS =====
+function renderBooks() {
+  const filtered = activeFilter === 'Todos' ? BOOKS : BOOKS.filter(b => b.cat === activeFilter);
+  const grid = document.getElementById('books-grid');
+  if (!filtered.length) { grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:40px">Nenhum ebook nesta categoria.</div>'; return; }
+  grid.innerHTML = filtered.map(b => {
+    const localPrice = formatPrice(b.price);
+    const snippet = b.preview.substring(0, 80) + '…';
+    return `<div class="book-card" onclick="openPreview(${b.id})">
+      <div class="book-cover" style="background:${b.color}">
+        <div class="cat-ribbon"></div>
+        <div class="cat-tag">${b.cat}</div>
+        <div class="book-emoji">${b.emoji}</div>
+        <div class="book-name">${b.title}</div>
+        <div class="cover-hint">👁 Ver resumo</div>
+      </div>
+      <div class="book-info">
+        <div class="book-cat">${b.cat}</div>
+        <div class="book-title">${b.title}</div>
+        <div class="book-snippet">${snippet}</div>
+        <div class="book-footer">
+          <div class="book-price-wrap">
+            <div class="book-price">$${b.price} USD</div>
+          </div>
+          <button class="btn-buy-card" onclick="event.stopPropagation();openPreview(${b.id})">Comprar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderBooks();
+}
+
+// ===== PREVIEW MODAL =====
+function openPreview(id) {
+  const b = BOOKS.find(x => x.id === id);
+  if (!b) return;
+  const r = currentRegion;
+
+  // Cover
+  const cov = document.getElementById('prev-cover');
+  cov.style.background = b.color;
+  cov.innerHTML = `
+    <div style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.07)"></div>
+    <div style="font-size:44px;margin-bottom:10px;filter:drop-shadow(0 3px 14px rgba(0,0,0,.5));position:relative;z-index:1">${b.emoji}</div>
+    <div style="font-size:17px;font-weight:900;text-shadow:0 1px 8px rgba(0,0,0,.6);padding:0 12px;line-height:1.2;position:relative;z-index:1">${b.title}</div>
+    <div style="font-size:10px;margin-top:8px;opacity:.7;letter-spacing:1.5px;position:relative;z-index:1">${b.pages} PÁGINAS · ${b.cat.toUpperCase()}</div>`;
+
+  document.getElementById('prev-title').textContent = b.title;
+  document.getElementById('prev-cat').textContent = b.cat;
+  document.getElementById('prev-pages').textContent = b.pages + ' páginas';
+  document.getElementById('prev-desc').textContent = b.desc;
+
+  // Rich content
+  const localPrice = formatPrice(b.price);
+  document.getElementById('prev-price-local').textContent = '$' + b.price + ' USD';
+  document.getElementById('prev-price-usd').textContent = 'Equivalente a ' + formatPrice(b.price) + ' na tua moeda local · Câmbio automático';
+
+  // Index + excerpt
+  const indexRows = b.indice.map((item, i) => {
+    const n2 = b.indice.length;
+    const pg = i===0 ? 3 : i===n2-1 ? b.pages : Math.round(3 + (b.pages-3) * (i/(n2-1)));
+    return `<div class="prev-index-item ${i===0||i===b.indice.length-1?'intro':''}">
+      <span>${item}</span><span style="color:var(--muted)">${pg}</span></div>`;
+  }).join('');
+
+  document.getElementById('prev-content').innerHTML = `
+    <div class="prev-section-label">📖 Sobre este Ebook</div>
+    <p style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:12px">${b.preview}</p>
+    <div class="prev-section-label" style="margin-top:12px">📋 Índice — ${b.indice.length} capítulos</div>
+    <div style="margin-bottom:10px">${indexRows}</div>
+    <div class="prev-section-label" style="margin-top:12px">✦ Trecho — ${b.indice[1]||'Capítulo 1'}</div>
+    <div class="prev-excerpt">${b.excerpt}</div>
+    <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:8px">[ Continua no ebook completo · ${b.pages} páginas ]</div>`;
+
+  // Buy button → Hotmart
+  // Always show BOTH buttons
+  const btnsDiv = document.getElementById('prev-buy-btns');
+  btnsDiv.innerHTML = '';
+  const regionKey = Object.keys(REGIONS).find(k => REGIONS[k] === currentRegion) || 'default';
+
+  // Fambapay — recommended for MZ/AO, available for all
+  const fb = document.createElement('button');
+  fb.className = 'btn-hotmart';
+  const fbRecommended = FAMBAPAY_REGIONS.includes(regionKey);
+  fb.style.cssText = 'width:100%;background:linear-gradient(135deg,#00b880,#00d9a0);justify-content:center;gap:8px;color:#000;border:none;padding:13px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;position:relative';
+  fb.innerHTML = `📱 Fambapay — M-Pesa · E-Mola · Cartão
+    ${fbRecommended ? '<span style="position:absolute;top:-8px;right:8px;background:#ff9500;color:#000;font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px">✦ RECOMENDADO</span>' : ''}`;
+  fb.onclick = () => { closeOv('ov-preview'); buyNow(id, 'fambapay'); };
+  btnsDiv.appendChild(fb);
+
+  // Hotmart — recommended for BR/PT/US/EU, available for all
+  const ht = document.createElement('button');
+  const htRecommended = HOTMART_REGIONS.includes(regionKey) && regionKey !== 'default';
+  ht.style.cssText = 'width:100%;background:linear-gradient(135deg,#cc4400,#ff6600);justify-content:center;gap:8px;color:#fff;border:none;padding:13px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;position:relative';
+  ht.innerHTML = `🌍 Hotmart — Pix · PayPal · Cartão · Boleto
+    ${htRecommended ? '<span style="position:absolute;top:-8px;right:8px;background:#ff9500;color:#000;font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px">✦ RECOMENDADO</span>' : ''}`;
+  ht.onclick = () => { closeOv('ov-preview'); buyNow(id, 'hotmart'); };
+  btnsDiv.appendChild(ht);
+
+  // Divider label
+  const div = document.createElement('div');
+  div.style.cssText = 'font-size:10px;color:#607890;text-align:center;padding:2px 0';
+  div.textContent = '✦ Escolhe a plataforma de pagamento da tua preferência';
+  btnsDiv.insertBefore(div, ht);
+  openOv('ov-preview');
+}
+
+function buyNow(id, platform) {
+  const b = BOOKS.find(x => x.id === id);
+  if (!b) return;
+
+  const link = platform === 'fambapay' ? FAMBAPAY_LINKS[id] : HOTMART_LINKS[id];
+  const placeholder = platform === 'fambapay' ? 'fambapay.com/SEU' : 'hotmart.com/SEU';
+
+  if (link && !link.includes(placeholder)) {
+    window.open(link, '_blank');
+  } else {
+    const name = platform === 'fambapay' ? 'Fambapay' : 'Hotmart';
+    showPlatformNotice(name);
+  }
+}
+
+function showPlatformNotice(name) {
+  const d = document.createElement('div');
+  d.id = 'platform-notice-overlay';
+  d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px';
+  d.innerHTML = `<div style="background:#0d1b2e;border:1px solid #1a2d44;border-radius:14px;padding:28px;max-width:340px;width:100%;text-align:center">
+    <div style="font-size:40px;margin-bottom:12px">⚙️</div>
+    <div style="font-size:16px;font-weight:800;margin-bottom:8px;color:#fff">Loja em Configuração</div>
+    <div style="font-size:13px;color:#b0c4d8;line-height:1.6;margin-bottom:18px">
+      Os pagamentos via <strong style="color:#00d9a0">${name}</strong> serão activados em breve.<br><br>
+      Entretanto podes contactar-nos directamente para adquirir o teu ebook.
+    </div>
+    <button onclick="document.getElementById('platform-notice-overlay').remove()" style="background:#00d9a0;color:#000;border:none;padding:11px 28px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;width:100%;font-family:inherit">OK, Entendido</button>
+  </div>`;
+  document.body.appendChild(d);
+}
+
+function openOv(id) { document.getElementById(id).classList.add('open'); }
+function closeOv(id) { document.getElementById(id).classList.remove('open'); }
+window.addEventListener('DOMContentLoaded', function() {
+  var op = document.getElementById('ov-preview');
+  var oc = document.getElementById('ov-cart');
+  if(op) op.addEventListener('click', function(e){ if(e.target===this) closeOv('ov-preview'); });
+  if(oc) oc.addEventListener('click', function(e){ if(e.target===this) closeOv('ov-cart'); });
+});
+
+// ===== CHAT =====
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const w = document.getElementById('chat-window');
+  if (chatOpen) {
+    w.classList.add('open');
+    if (!document.getElementById('chat-msgs').children.length) {
+      addMsg('bot', `Olá! 👋 Sou a Minda, a tua assistente. Posso ajudar-te a escolher o ebook certo, tirar dúvidas sobre pagamentos ou sobre a entrega. Como posso ajudar?`);
+    }
+    document.getElementById('chat-inp').focus();
+  } else { w.classList.remove('open'); }
+}
+
+function addMsg(role, text) {
+  const el = document.getElementById('chat-msgs');
+  const d = document.createElement('div');
+  d.className = 'cmsg ' + role;
+  d.textContent = text;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+
+async function sendChat() {
+  const inp = document.getElementById('chat-inp');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  addMsg('user', text);
+  const catalog = BOOKS.map(b => `"${b.title}" (${b.cat}) — ${formatPrice(b.price)}`).join(', ');
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514', max_tokens: 400,
+        system: `Você é Minda, assistente de vendas da MindaBooks. Seja simpática e concisa (máx 3 frases). Responda em Português. Região do cliente: ${currentRegion.name}. Moeda: ${currentRegion.currency}. Catálogo: ${catalog}. Pagamentos via Hotmart: ${currentRegion.pay.join(', ')}. Entrega automática por email após pagamento.`,
+        messages: [{ role: 'user', content: text }]
+      })
+    });
+    const data = await res.json();
+    addMsg('bot', data.content?.[0]?.text || 'Tenta novamente!');
+  } catch(e) { addMsg('bot', 'Erro de ligação. Tenta novamente!'); }
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+// ===== OWNER CONFIG (set from Admin panel) =====
+function getOwnerConfig() {
+  try {
+    const cfg = JSON.parse(localStorage.getItem('mb_owner_cfg') || '{}');
+    return {
+      name:     cfg.name     || 'Domingos Cuna',
+      mpesa:    cfg.mpesa    || '+258 84 XXX XXXX',
+      emola:    cfg.emola    || '+258 86 XXX XXXX',
+      paypal:   cfg.paypal   || 'pagamentos@mindabooks.com',
+      banco:    cfg.banco    || 'BCI — IBAN: MZ59 0001 0000 0000 0000 0000 X',
+      nib:      cfg.nib      || 'NIB: 0001.0000.00000000000.X',
+      multicaixa: cfg.multicaixa || 'MCX-MB-2025',
+      cartao_link: cfg.cartao_link || '',
+    };
+  } catch(e) { return {}; }
+}
+
+// ===== PAYMENT METHODS CONFIG =====
+const PAY_METHODS_CONFIG = {
+  mpesa: {
+    name: 'M-Pesa', icon: '📱', color: 'linear-gradient(135deg,#c8102e,#8b0000)', badge: 'INSTANT',
+    countries: ['🇲🇿 Moçambique'],
+    getDetails: (cfg, book, region) => ({
+      beneficiary: cfg.name,
+      number: cfg.mpesa,
+      amount_local: formatPrice(book.price),
+      amount_usd: '$' + book.price + ' USD',
+      steps: [
+        { t: 'Marca no teu telemóvel:', h: '*150*00#' },
+        { t: 'Selecciona <strong>3 — Pagamentos</strong>' },
+        { t: 'Selecciona <strong>2 — Pagar Empresa</strong>' },
+        { t: 'Introduz o número M-Pesa do beneficiário:', h: cfg.mpesa },
+        { t: 'Introduz o valor exacto:', h: formatPrice(book.price) },
+        { t: 'Confirma com o teu <strong>PIN M-Pesa</strong>' },
+      ]
+    })
+  },
+  emola: {
+    name: 'E-Mola', icon: '💚', color: 'linear-gradient(135deg,#006400,#004d00)', badge: 'INSTANT',
+    countries: ['🇲🇿 Moçambique'],
+    getDetails: (cfg, book, region) => ({
+      beneficiary: cfg.name,
+      number: cfg.emola,
+      amount_local: formatPrice(book.price),
+      amount_usd: '$' + book.price + ' USD',
+      steps: [
+        { t: 'Abre a app <strong>E-Mola</strong> no teu telemóvel' },
+        { t: 'Selecciona <strong>Pagamentos → Pagar</strong>' },
+        { t: 'Introduz o número E-Mola do beneficiário:', h: cfg.emola },
+        { t: 'Introduz o valor exacto:', h: formatPrice(book.price) },
+        { t: 'Confirma com o teu <strong>PIN E-Mola</strong>' },
+      ]
+    })
+  },
+  paypal: {
+    name: 'PayPal', icon: '🅿️', color: 'linear-gradient(135deg,#003087,#009cde)', badge: 'INSTANT',
+    countries: ['🌍 Internacional · 200+ países'],
+    getDetails: (cfg, book, region) => ({
+      beneficiary: null,
+      number: cfg.paypal,
+      amount_local: '$' + book.price + ' USD',
+      amount_usd: 'Paga sempre em USD ($)',
+      steps: [
+        { t: 'Acede ao <strong>PayPal.com</strong> ou abre a app' },
+        { t: 'Clica em <strong>Enviar Dinheiro</strong>' },
+        { t: 'Introduz o email PayPal do beneficiário:', h: cfg.paypal },
+        { t: 'Valor exacto em USD:', h: '$' + book.price },
+        { t: 'Na nota escreve: <strong>' + book.title + '</strong>' },
+        { t: 'Confirma e envia' },
+      ]
+    })
+  },
+  banco: {
+    name: 'Transferência Bancária', icon: '🏦', color: 'linear-gradient(135deg,#1a3a2a,#0d5c3a)', badge: '1-2 DIAS',
+    countries: ['🌍 Todos os países'],
+    getDetails: (cfg, book, region) => ({
+      beneficiary: null,
+      number: null,
+      iban: cfg.banco,
+      nib: cfg.nib,
+      amount_local: formatPrice(book.price),
+      amount_usd: '$' + book.price + ' USD',
+      steps: [
+        { t: 'Acede ao teu banco (app ou balcão)' },
+        { t: 'Selecciona <strong>Transferência / Pagamento</strong>' },
+        { t: 'Dados bancários do beneficiário:', h: cfg.banco },
+        { t: 'NIB:', h: cfg.nib },
+        { t: 'Valor:', h: formatPrice(book.price) },
+        { t: 'Referência: <strong>MINDABOOKS · ' + book.title.substring(0,15) + '</strong>' },
+      ]
+    })
+  },
+  cartao: {
+    name: 'Cartão Débito/Crédito', icon: '💳', color: 'linear-gradient(135deg,#1a1a4a,#2d2d8c)', badge: '3D SECURE',
+    countries: ['🌍 Visa · Mastercard · Amex'],
+    getDetails: (cfg, book, region) => ({
+      beneficiary: null,
+      number: null,
+      amount_local: formatPrice(book.price),
+      amount_usd: '$' + book.price + ' USD',
+      isCard: true,
+      steps: [
+        { t: 'Preenche os dados do cartão abaixo' },
+        { t: 'Cartões aceites: <strong>Visa · Mastercard · Amex</strong>' },
+        { t: 'Pagamento seguro com <strong>3D Secure</strong>' },
+        { t: 'Recebes confirmação imediata no email' },
+      ]
+    })
+  },
+  multicaixa: {
+    name: 'Multicaixa Express', icon: '🏧', color: 'linear-gradient(135deg,#3a2a1a,#8c6d2d)', badge: 'ATÉ 24H',
+    countries: ['🇦🇴 Angola'],
+    getDetails: (cfg, book, region) => ({
+      beneficiary: null,
+      number: cfg.multicaixa,
+      amount_local: formatPrice(book.price),
+      amount_usd: '$' + book.price + ' USD',
+      steps: [
+        { t: 'Abre a app <strong>Multicaixa Express</strong>' },
+        { t: 'Selecciona <strong>Transferência → Pagamento</strong>' },
+        { t: 'Referência de pagamento:', h: cfg.multicaixa },
+        { t: 'Valor:', h: formatPrice(book.price) },
+        { t: 'Confirma com o teu <strong>PIN Multicaixa</strong>' },
+      ]
+    })
+  },
+  pix: {
+    name: 'Pix', icon: '⚡', color: 'linear-gradient(135deg,#1a3a3a,#2d8c7a)', badge: 'INSTANT',
+    countries: ['🇧🇷 Brasil'],
+    getDetails: (cfg, book, region) => ({
+      beneficiary: null,
+      number: cfg.paypal,
+      amount_local: 'R$ ' + (book.price * 5.1).toFixed(2),
+      amount_usd: '$' + book.price + ' USD',
+      steps: [
+        { t: 'Abre o app do teu banco no Brasil' },
+        { t: 'Selecciona <strong>Pix → Transferir</strong>' },
+        { t: 'Chave Pix (email):', h: cfg.paypal },
+        { t: 'Valor em Reais:', h: 'R$ ' + (book.price * 5.1).toFixed(2) },
+        { t: 'Confirma a transferência' },
+      ]
+    })
+  },
+};
+
+// ===== CART STATE =====
+let cartBook = null;
+let selectedMethod = null;
+let customerName = '';
+let customerEmail = '';
+let dlCounts = {};
+
+function openBookPayment(bookId) {
+  const b = BOOKS.find(x => x.id === bookId);
+  if (!b) return;
+  cartBook = b;
+  selectedMethod = null;
+  renderCartModal(b);
+  openOv('ov-cart');
+}
+
+function renderCartModal(b) {
+  const cfg = getOwnerConfig();
+  const localPrice = formatPrice(b.price);
+  document.getElementById('cart-modal-content').innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-size:17px;font-weight:800">🛒 Comprar Ebook</div>
+      <button onclick="closeOv('ov-cart')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px">✕</button>
+    </div>
+
+    <!-- Book summary -->
+    <div style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:16px">
+      <div style="width:44px;height:56px;border-radius:6px;background:${b.color};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">${b.emoji}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:700;margin-bottom:2px">${b.title}</div>
+        <div style="font-size:11px;color:var(--muted)">${b.cat} · ${b.pages} páginas</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:18px;font-weight:900;color:var(--teal)">${localPrice}</div>
+        <div style="font-size:10px;color:var(--muted)">$${b.price} USD</div>
+      </div>
+    </div>
+
+    <!-- Customer info -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div>
+        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Teu Nome</div>
+        <input id="cust-name" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--text);outline:none;font-family:inherit" placeholder="Nome completo" oninput="customerName=this.value">
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Teu Email</div>
+        <input id="cust-email" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--text);outline:none;font-family:inherit" placeholder="email@exemplo.com" type="email" oninput="customerEmail=this.value">
+      </div>
+    </div>
+
+    <!-- Payment methods -->
+    <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Escolhe o Método de Pagamento:</div>
+    <div class="pay-opts-grid">
+      ${Object.entries(PAY_METHODS_CONFIG).map(([key, m]) => `
+        <button class="pay-opt-btn" id="pob-${key}" onclick="selectPayMethod('${key}')">
+          <span class="pay-opt-icon">${m.icon}</span>
+          <span>${m.name}</span>
+          <span class="pay-opt-badge" style="background:rgba(0,217,160,.12);color:var(--teal)">${m.badge}</span>
+        </button>`).join('')}
+    </div>
+
+    <!-- Payment details panel (shown after selecting method) -->
+    <div class="pay-detail-panel" id="pay-detail-panel"></div>
+  `;
+}
+
+function selectPayMethod(key) {
+  if (!customerName.trim()) { toast('⚠️ Introduz o teu nome primeiro!'); document.getElementById('cust-name')?.focus(); return; }
+  if (!customerEmail.trim() || !customerEmail.includes('@')) { toast('⚠️ Introduz um email válido!'); document.getElementById('cust-email')?.focus(); return; }
+
+  selectedMethod = key;
+  // Highlight selected
+  document.querySelectorAll('.pay-opt-btn').forEach(b => b.classList.remove('selected'));
+  const btn = document.getElementById('pob-' + key);
+  if (btn) btn.classList.add('selected');
+
+  const m = PAY_METHODS_CONFIG[key];
+  const cfg = getOwnerConfig();
+  const details = m.getDetails(cfg, cartBook, currentRegion);
+  const panel = document.getElementById('pay-detail-panel');
+  panel.classList.add('show');
+
+  // Build steps HTML
+  const stepsHtml = details.steps.map((s, i) => `
+    <div class="pdp-step">
+      <div class="pdp-step-num">${i+1}</div>
+      <div>${s.t}${s.h ? `<div style="background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font-family:monospace;font-size:13px;font-weight:700;color:var(--teal);margin-top:5px;letter-spacing:.5px">${s.h} <button onclick="copyText('${s.h.replace(/'/g,"\'")}',this)" style="background:var(--teal-dim);border:1px solid rgba(0,217,160,.3);color:var(--teal);font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;cursor:pointer;margin-left:8px;font-family:inherit">Copiar</button></div>` : ''}</div>
+    </div>`).join('');
+
+  // Beneficiary rows
+  let benefRows = '';
+  if (details.beneficiary) {
+    benefRows += `<div class="pdp-field">
+      <div class="pdp-field-label">👤 Nome do Beneficiário</div>
+      <div class="pdp-field-value" style="color:var(--text);font-family:inherit;font-size:14px;font-weight:700">${details.beneficiary}</div>
+    </div>`;
+  }
+  if (details.number) {
+    benefRows += `<div class="pdp-field">
+      <div class="pdp-field-label">${key==='paypal'?'📧 Email PayPal':'📱 Número ' + m.name}</div>
+      <div class="pdp-field-value highlight">${details.number}
+        <button onclick="copyText('${details.number}',this)" class="copy-btn">Copiar</button>
+      </div>
+    </div>`;
+  }
+  if (details.iban) {
+    benefRows += `<div class="pdp-field">
+      <div class="pdp-field-label">🏦 IBAN</div>
+      <div class="pdp-field-value" style="font-size:12px;font-weight:700;color:var(--teal)">${details.iban}
+        <button onclick="copyText('${details.iban}',this)" class="copy-btn">Copiar</button>
+      </div>
+    </div>`;
+    benefRows += `<div class="pdp-field">
+      <div class="pdp-field-label">🔢 NIB</div>
+      <div class="pdp-field-value" style="font-size:12px;font-weight:700;color:var(--teal)">${details.nib}
+        <button onclick="copyText('${details.nib}',this)" class="copy-btn">Copiar</button>
+      </div>
+    </div>`;
+  }
+
+  // Card form
+  const cardForm = details.isCard ? `
+    <div style="display:grid;gap:8px;margin-bottom:12px">
+      <div>
+        <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:4px">Número do Cartão</div>
+        <input id="card-num" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--text);outline:none;font-family:monospace" placeholder="0000 0000 0000 0000" maxlength="19" oninput="this.value=this.value.replace(/[^0-9]/g,'').replace(/(.{4})/g,'$1 ').trim()">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:4px">Validade</div>
+          <input id="card-exp" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--text);outline:none;font-family:monospace" placeholder="MM/AA" maxlength="5">
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:4px">CVV</div>
+          <input id="card-cvv" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--text);outline:none;font-family:monospace" placeholder="000" maxlength="3" type="password">
+        </div>
+      </div>
+    </div>` : '';
+
+  panel.innerHTML = `
+    <div class="pdp-header">
+      <div class="pdp-icon" style="background:${m.color}">${m.icon}</div>
+      <div><div class="pdp-method-name">${m.name}</div><div class="pdp-method-sub">${m.countries.join(' · ')}</div></div>
+    </div>
+
+    <!-- Amount to pay -->
+    <div class="pdp-amount-box">
+      <div class="pdp-amount-label">💰 Valor a Pagar</div>
+      <div class="pdp-amount-val">${details.amount_local}</div>
+      <div class="pdp-amount-usd">${details.amount_usd}</div>
+    </div>
+
+    <!-- Beneficiary details -->
+    <div class="pdp-row">${benefRows}</div>
+
+    <!-- Steps -->
+    <div class="pdp-steps">
+      <div class="pdp-steps-title">📋 Passos para pagar:</div>
+      ${stepsHtml}
+    </div>
+
+    <!-- Card form if needed -->
+    ${cardForm}
+
+    <!-- Confirm button -->
+    <button class="btn-confirm-pay" onclick="confirmPayment()">
+      ✅ Já Efectuei o Pagamento
+    </button>
+    <div class="pdp-warning">Após confirmar, o teu ebook ficará disponível para download imediato.</div>
+  `;
+  // Scroll to panel
+  setTimeout(() => panel.scrollIntoView({ behavior:'smooth', block:'nearest' }), 100);
+}
+
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copiado!';
+    btn.style.background = 'var(--teal)';
+    btn.style.color = '#000';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.style.color = ''; }, 2000);
+  }).catch(() => toast('Copia manualmente: ' + text));
+}
+
+function confirmPayment() {
+  if (!customerName.trim() || !customerEmail.trim()) { toast('⚠️ Preenche o nome e email!'); return; }
+  if (!selectedMethod) { toast('⚠️ Escolhe um método de pagamento!'); return; }
+
+  const panel = document.getElementById('pay-detail-panel');
+  const m = PAY_METHODS_CONFIG[selectedMethod];
+
+  // Animate processing
+  panel.innerHTML = `<div style="text-align:center;padding:30px 16px">
+    <div style="width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px"></div>
+    <div style="font-size:15px;font-weight:700;margin-bottom:6px">A verificar pagamento...</div>
+    <div style="font-size:12px;color:var(--muted)">Por favor aguarda um momento</div>
+  </div>
+  <style>@keyframes spin{to{transform:rotate(360deg)}}
+/* OWNER MODE */
+#owner-bar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#ff6b00,#ff9500);color:#000;padding:8px 16px;font-size:12px;font-weight:700;display:none;align-items:center;gap:10px;flex-wrap:wrap}
+#owner-bar.show{display:flex}
+.owner-badge{background:#000;color:#ff9500;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800;letter-spacing:1px}
+.owner-btn{background:rgba(0,0,0,.2);border:1px solid rgba(0,0,0,.3);color:#000;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+.owner-btn:hover{background:rgba(0,0,0,.35)}
+#owner-login{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9998;display:none;align-items:center;justify-content:center}
+#owner-login.show{display:flex}
+</style>`;
+
+  setTimeout(() => showDownload(), 2200);
+}
+
+function showDownload() {
+  const b = cartBook;
+  const m = PAY_METHODS_CONFIG[selectedMethod];
+  const cfg = getOwnerConfig();
+  const orderId = 'MB-' + Date.now().toString().slice(-7);
+  const localPrice = formatPrice(b.price);
+
+  // Save sale for admin
+  const sales = JSON.parse(localStorage.getItem('mb_sales') || '[]');
+  sales.unshift({ id:orderId, book:b.title, price:b.price, payment:m.name, customer:customerName, email:customerEmail, date:new Date().toISOString(), status:'Pago' });
+  localStorage.setItem('mb_sales', JSON.stringify(sales));
+
+  // Download count
+  dlCounts[orderId] = { max:2, count:0, bookId:b.id };
+
+  document.getElementById('cart-modal-content').innerHTML = `
+    <div class="success-box">
+      <div class="s-icon">🎉</div>
+      <h2>Obrigado, ${customerName.split(' ')[0]}!</h2>
+      <p>Pagamento confirmado via ${m.icon} <strong>${m.name}</strong>. O teu ebook está pronto!</p>
+      <div class="order-ref">Pedido Nº ${orderId}</div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:12px;text-align:left">
+        <div style="width:44px;height:56px;border-radius:6px;background:${b.color};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px">${b.emoji}</div>
+        <div>
+          <div style="font-size:13px;font-weight:700">${b.title}</div>
+          <div style="font-size:11px;color:var(--muted)">${b.cat} · ${b.pages} páginas</div>
+          <div style="font-size:12px;color:var(--teal);font-weight:700;margin-top:3px">${localPrice} · ${m.name}</div>
+        </div>
+      </div>
+
+      <div class="dl-remain" id="dl-remain-${orderId}">⬇️ Downloads disponíveis: <strong>2 de 2</strong></div>
+      <button class="dl-btn" id="dl-btn-${orderId}" onclick="downloadEbook('${orderId}',${b.id})">
+        ⬇️ Descarregar Agora — ${b.title}
+      </button>
+      <div style="font-size:11px;color:var(--yellow);background:rgba(255,170,0,.07);border:1px solid rgba(255,170,0,.2);border-radius:6px;padding:8px 10px;margin-bottom:14px">
+        ⚠️ Tens apenas <strong>2 downloads</strong> disponíveis. Guarda o ficheiro em segurança.
+      </div>
+      <button class="btn-sec" style="width:100%" onclick="closeOv('ov-cart')">← Continuar a Comprar</button>
+    </div>`;
+}
+
+function downloadEbook(orderId, bookId) {
+  const rec = dlCounts[orderId];
+  if (!rec) return;
+  if (rec.count >= rec.max) { toast('🚫 Limite de 2 downloads atingido!'); return; }
+  rec.count++;
+  const remain = rec.max - rec.count;
+  const rEl = document.getElementById('dl-remain-' + orderId);
+  const bEl = document.getElementById('dl-btn-' + orderId);
+  if (rEl) rEl.innerHTML = `⬇️ Downloads disponíveis: <strong>${remain} de 2</strong>`;
+  if (bEl && remain <= 0) { bEl.disabled = true; bEl.textContent = '🚫 Downloads Esgotados'; }
+
+  const b = BOOKS.find(x => x.id === bookId);
+  if (!b) return;
+  generateAndDownload(b);
+}
+
+function generateAndDownload(b) {
+  toast('⬇️ A preparar o teu ebook...');
+  const indexHtml = (b.indice || []).map((item, i) => {
+    const n = b.indice.length;
+    const pg = i===0 ? 3 : i===n-1 ? b.pages : Math.round(3 + (b.pages - 3) * (i/(n-1)));
+    return `<tr><td style="padding:8px 12px;font-size:13px;color:${i===0||i===b.indice.length-1?'#00a070':'#333'};font-weight:${i===0||i===b.indice.length-1?'700':'400'}">${item}</td><td style="padding:8px 12px;font-size:12px;color:#999;text-align:right">${pg}</td></tr>`;
+  }).join('');
+
+  const ebookHTML = `<!DOCTYPE html>
+<html lang="pt"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${b.title} — MindaBooks</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Georgia,serif;background:#fafaf8;color:#222}
+.cover{background:${b.color};min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:50px 30px;position:relative;overflow:hidden}
+.cover::before{content:'';position:absolute;top:-60px;right:-60px;width:250px;height:250px;border-radius:50%;background:rgba(255,255,255,.07)}
+.cover::after{content:'';position:absolute;bottom:-80px;left:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.05)}
+.cv-emoji{font-size:80px;margin-bottom:20px;filter:drop-shadow(0 4px 16px rgba(0,0,0,.4));position:relative;z-index:1}
+.cv-cat{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.75);margin-bottom:16px;border:1px solid rgba(255,255,255,.35);padding:4px 16px;border-radius:20px;display:inline-block;position:relative;z-index:1}
+.cv-title{font-size:clamp(26px,5vw,44px);font-weight:900;color:#fff;line-height:1.15;margin-bottom:12px;text-shadow:0 2px 10px rgba(0,0,0,.4);position:relative;z-index:1}
+.cv-desc{font-size:14px;color:rgba(255,255,255,.75);line-height:1.6;max-width:420px;margin:0 auto 22px;position:relative;z-index:1}
+.cv-line{width:60px;height:3px;background:rgba(255,255,255,.4);margin:0 auto 20px;border-radius:2px;position:relative;z-index:1}
+.cv-pages{font-size:12px;color:rgba(255,255,255,.6);letter-spacing:1px;position:relative;z-index:1}
+.cv-brand{position:absolute;bottom:22px;right:22px;font-size:11px;color:rgba(255,255,255,.4);font-style:italic}
+.content{max-width:680px;margin:0 auto;padding:40px 24px}
+.idx-box{background:#fff;border-radius:12px;padding:28px;margin-bottom:36px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.sec-label{font-size:10px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:#00a070;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:#e0f7f0}
+h2{font-size:20px;font-weight:800;color:#111;margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid #00d9a0}
+p{font-size:14px;line-height:1.85;color:#333;margin-bottom:14px;text-align:justify}
+blockquote{border-left:4px solid #00d9a0;padding:12px 18px;margin:16px 0;background:#f0fdf8;border-radius:0 8px 8px 0;font-style:italic;color:#444;font-size:14px;line-height:1.7}
+.concl-box{background:#f0fdf8;border:1px solid #b2eddb;border-radius:12px;padding:28px;margin-bottom:24px}
+.footer-pg{text-align:center;padding:40px 24px 20px;border-top:1px solid #eee;margin-top:40px}
+.footer-pg .mb{font-size:20px;font-weight:900;color:#00a070;margin-bottom:6px}
+.footer-pg p{font-size:12px;color:#999;line-height:1.6}
+table{width:100%;border-collapse:collapse}
+@media print{.cover{min-height:100vh;page-break-after:always}.idx-box{page-break-after:always}body{background:#fff}}
+@media(max-width:600px){.cover{padding:30px 20px;min-height:80vh}.content{padding:24px 16px}}
+
+/* OWNER MODE */
+#owner-bar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#ff6b00,#ff9500);color:#000;padding:8px 16px;font-size:12px;font-weight:700;display:none;align-items:center;gap:10px;flex-wrap:wrap}
+#owner-bar.show{display:flex}
+.owner-badge{background:#000;color:#ff9500;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:800;letter-spacing:1px}
+.owner-btn{background:rgba(0,0,0,.2);border:1px solid rgba(0,0,0,.3);color:#000;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+.owner-btn:hover{background:rgba(0,0,0,.35)}
+#owner-login{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9998;display:none;align-items:center;justify-content:center}
+#owner-login.show{display:flex}
+</style></head><body>
+<div class="cover">
+  <div class="cv-emoji">${b.emoji||'📚'}</div>
+  <div class="cv-cat">${b.cat}</div>
+  <h1 class="cv-title">${b.title}</h1>
+  <div class="cv-line"></div>
+  <p class="cv-desc">${b.desc}</p>
+  <div class="cv-pages">📄 ${b.pages||60} Páginas · Edição Digital Exclusiva</div>
+  <div class="cv-brand">MindaBooks © 2025</div>
+</div>
+<div class="content">
+  <div class="idx-box">
+    <div class="sec-label">📋 Índice</div>
+    <table>${indexHtml}</table>
+  </div>
+  <div class="sec-label">📖 Sobre este Ebook</div>
+  <p>${b.preview}</p>
+  <blockquote>"${b.desc}"</blockquote>
+  <h2>Introdução</h2>
+  <p>${b.excerpt || b.preview}</p>
+  <p>Este ebook foi cuidadosamente elaborado para te guiar num processo de transformação real e prática. Cada capítulo foi pensado para ser aplicado imediatamente no teu quotidiano — não apenas lido, mas vivido.</p>
+  <p>A MindaBooks acredita que o conhecimento só tem valor quando se transforma em acção. Por isso, em cada capítulo encontrarás não apenas teoria, mas exercícios práticos, exemplos reais e ferramentas que podes usar hoje mesmo.</p>
+  ${b.indice ? b.indice.slice(1,-1).map((cap,i) => `<h2>${cap}</h2><p>Este capítulo aborda em profundidade os conceitos e estratégias essenciais relacionados com "${cap.replace(/^Cap\.\s*\d+\s*—\s*/,'').replace(/^Capítulo\s*\d+\s*—\s*/,'')}". Através de exemplos práticos e exercícios aplicados à realidade africana e lusófona, vais desenvolver competências concretas que se traduzem em resultados reais.</p><p>Os estudos e casos apresentados foram seleccionados especificamente para o contexto moçambicano, angolano e de outros países de língua portuguesa, garantindo que cada aprendizagem seja directamente aplicável à tua situação.</p>`).join('') : ''}
+  <div class="concl-box">
+    <div class="sec-label">✅ Conclusão</div>
+    <p>Chegaste ao fim deste ebook — mas este é apenas o começo da tua jornada. O conhecimento que adquiriste aqui só tem valor se for colocado em prática. Começa hoje, com um pequeno passo. A consistência ao longo do tempo cria resultados extraordinários.</p>
+    <p>Obrigado por confiares na MindaBooks. Estamos aqui para continuar a apoiar o teu crescimento — explora o nosso catálogo e continua a investir na tua melhor versão.</p>
+  </div>
+  <div class="footer-pg">
+    <div class="mb">MindaBooks</div>
+    <p>Este ebook foi adquirido legalmente · Uso pessoal exclusivo<br>Não é permitida a reprodução ou partilha sem autorização<br>© 2025 MindaBooks — Todos os direitos reservados</p>
+  </div>
+</div>
+<!-- Payments handled by Fambapay / Hotmart -->
+
+<!-- OWNER MODE BAR -->
+<div id="owner-bar">
+  <span class="owner-badge">👑 MODO DONO</span>
+  <span>Estás a ver a loja como cliente — os botões de compra estão em modo de teste.</span>
+  <button class="owner-btn" onclick="testFambapay()">🧪 Testar Fambapay</button>
+  <button class="owner-btn" onclick="testHotmart()">🧪 Testar Hotmart</button>
+  <button class="owner-btn" onclick="checkLinks()">🔗 Ver Links</button>
+  <button class="owner-btn" style="margin-left:auto" onclick="exitOwner()">✕ Sair</button>
+</div>
+
+<!-- OWNER LOGIN -->
+<div id="owner-login">
+  <div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:28px;max-width:320px;width:100%;text-align:center">
+    <div style="font-size:32px;margin-bottom:12px">👑</div>
+    <div style="font-size:17px;font-weight:800;margin-bottom:6px">Acesso do Dono</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Introduz a senha para activar o Modo Dono</div>
+    <input id="owner-pass-inp" type="password" placeholder="Senha..." style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--text);outline:none;font-family:inherit;margin-bottom:10px" onkeypress="if(event.key==='Enter')verifyOwner()">
+    <button onclick="verifyOwner()" style="width:100%;background:var(--teal);color:#000;border:none;padding:11px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">Entrar</button>
+    <button onclick="document.getElementById('owner-login').classList.remove('show')" style="width:100%;background:none;border:1px solid var(--border);color:var(--muted);padding:9px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit">Cancelar</button>
+    <div id="owner-err" style="font-size:12px;color:#ff4466;margin-top:8px;display:none">Senha incorrecta. Tenta novamente.</div>
+  </div>
+</div>
+</body></html>`;
+
+  const blob = new Blob([ebookHTML], { type:'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = b.title.replace(/[^a-zA-Z0-9]/g,'-') + '-MindaBooks.html';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+  toast('✅ Ebook descarregado com sucesso!');
+}
+
+// INIT
+detectRegion();
+renderBooks();
+
+// ===== OWNER MODE =====
+const OWNER_PASS = 'minda2025'; // muda esta senha no Admin
+let ownerMode = false;
+
+function openOwnerLogin() {
+  document.getElementById('owner-login').classList.add('show');
+  document.getElementById('owner-pass-inp').value = '';
+  document.getElementById('owner-err').style.display = 'none';
+  setTimeout(() => document.getElementById('owner-pass-inp').focus(), 100);
+}
+
+function verifyOwner() {
+  const pass = document.getElementById('owner-pass-inp').value;
+  if (pass === OWNER_PASS) {
+    ownerMode = true;
+    document.getElementById('owner-login').classList.remove('show');
+    document.getElementById('owner-bar').classList.add('show');
+    document.body.style.paddingBottom = '44px';
+    toast('👑 Modo Dono activado! Podes testar a loja.');
+  } else {
+    document.getElementById('owner-err').style.display = 'block';
+    document.getElementById('owner-pass-inp').value = '';
+    document.getElementById('owner-pass-inp').focus();
+  }
+}
+
+function exitOwner() {
+  ownerMode = false;
+  document.getElementById('owner-bar').classList.remove('show');
+  document.body.style.paddingBottom = '';
+  toast('Modo Dono desactivado.');
+}
+
+function testFambapay() {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML = `<div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:360px;width:100%;text-align:center">
+    <div style="font-size:36px;margin-bottom:10px">📱</div>
+    <div style="font-size:15px;font-weight:800;margin-bottom:8px;color:var(--teal)">Fambapay — Teste</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px">
+      Quando tiveres o link real do Fambapay, o cliente será redireccionado para a página de pagamento da Fambapay onde poderá pagar via:<br><br>
+      <strong>📱 M-Pesa · 💚 E-Mola · 💳 Cartão</strong><br><br>
+      Após o pagamento, o Fambapay envia o PDF automaticamente para o email do cliente.
+    </div>
+    <div style="background:var(--teal-dim);border:1px solid rgba(0,217,160,.2);border-radius:8px;padding:10px;font-size:11px;color:var(--teal);margin-bottom:14px">
+      ✅ Link Fambapay: <span id="fb-link-preview">A configurar...</span>
+    </div>
+    <button onclick="this.closest('div[style]').remove()" style="background:var(--teal);color:#000;border:none;padding:10px 28px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;width:100%">OK</button>
+  </div>`;
+  document.body.appendChild(overlay);
+  // Show first fambapay link
+  const link = FAMBAPAY_LINKS[1];
+  document.getElementById('fb-link-preview').textContent = link.includes('SEU') ? '❌ Não configurado' : '✅ ' + link;
+}
+
+function testHotmart() {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML = `<div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:360px;width:100%;text-align:center">
+    <div style="font-size:36px;margin-bottom:10px">🌍</div>
+    <div style="font-size:15px;font-weight:800;margin-bottom:8px;color:#ff9500">Hotmart — Teste</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px">
+      Quando tiveres o link real do Hotmart, o cliente será redireccionado para o checkout do Hotmart onde poderá pagar via:<br><br>
+      <strong>⚡ Pix · 📄 Boleto · 🅿️ PayPal · 💳 Cartão</strong><br><br>
+      Após o pagamento, o Hotmart envia o PDF automaticamente para o email do cliente.
+    </div>
+    <div style="background:rgba(255,149,0,.1);border:1px solid rgba(255,149,0,.2);border-radius:8px;padding:10px;font-size:11px;color:#ff9500;margin-bottom:14px">
+      ✅ Link Hotmart: <span id="ht-link-preview">A configurar...</span>
+    </div>
+    <button onclick="this.closest('div[style]').remove()" style="background:#ff9500;color:#000;border:none;padding:10px 28px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;width:100%">OK</button>
+  </div>`;
+  document.body.appendChild(overlay);
+  const link = HOTMART_LINKS[1];
+  document.getElementById('ht-link-preview').textContent = link.includes('SEU') ? '❌ Não configurado' : '✅ ' + link;
+}
+
+function checkLinks() {
+  let html = '<div style="font-size:12px;font-weight:700;margin-bottom:10px;color:var(--teal)">Estado dos Links:</div>';
+  BOOKS.forEach(b => {
+    const fb = FAMBAPAY_LINKS[b.id].includes('SEU') ? '❌' : '✅';
+    const ht = HOTMART_LINKS[b.id].includes('SEU') ? '❌' : '✅';
+    html += `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:11px">
+      <span>${b.emoji}</span>
+      <span style="flex:1;color:var(--text2)">${b.title}</span>
+      <span style="font-size:10px">Famba ${fb}</span>
+      <span style="font-size:10px">Hotmart ${ht}</span>
+    </div>`;
+  });
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML = `<div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:380px;width:100%">
+    <div style="font-size:16px;font-weight:800;margin-bottom:14px">🔗 Estado dos Links de Pagamento</div>
+    ${html}
+    <div style="margin-top:12px;font-size:11px;color:var(--muted)">Quando criares as contas no Fambapay e Hotmart, substitui os links no código.</div>
+    <button onclick="this.closest('div[style]').remove()" style="width:100%;margin-top:14px;background:var(--teal);color:#000;border:none;padding:10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">Fechar</button>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+// Activate owner mode via URL param or triple-tap logo
+let logoTaps = 0;
+document.addEventListener('DOMContentLoaded', () => {
+  // URL param: ?dono=sim
+  if (new URLSearchParams(window.location.search).get('dono') === 'sim') {
+    openOwnerLogin();
+  }
+  // Triple-tap on logo
+  const logo = document.querySelector('.nav-logo');
+  if (logo) {
+    logo.addEventListener('click', () => {
+      logoTaps++;
+      if (logoTaps >= 3) { logoTaps = 0; openOwnerLogin(); }
+      setTimeout(() => logoTaps = 0, 2000);
+    });
+  }
+});
+
+</script>
+
+<!-- Payments handled by Fambapay / Hotmart -->
+
+<!-- OWNER MODE BAR -->
+<div id="owner-bar">
+  <span class="owner-badge">👑 MODO DONO</span>
+  <span>Estás a ver a loja como cliente — os botões de compra estão em modo de teste.</span>
+  <button class="owner-btn" onclick="testFambapay()">🧪 Testar Fambapay</button>
+  <button class="owner-btn" onclick="testHotmart()">🧪 Testar Hotmart</button>
+  <button class="owner-btn" onclick="checkLinks()">🔗 Ver Links</button>
+  <button class="owner-btn" style="margin-left:auto" onclick="exitOwner()">✕ Sair</button>
+</div>
+
+<!-- OWNER LOGIN -->
+<div id="owner-login">
+  <div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:28px;max-width:320px;width:100%;text-align:center">
+    <div style="font-size:32px;margin-bottom:12px">👑</div>
+    <div style="font-size:17px;font-weight:800;margin-bottom:6px">Acesso do Dono</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Introduz a senha para activar o Modo Dono</div>
+    <input id="owner-pass-inp" type="password" placeholder="Senha..." style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--text);outline:none;font-family:inherit;margin-bottom:10px" onkeypress="if(event.key==='Enter')verifyOwner()">
+    <button onclick="verifyOwner()" style="width:100%;background:var(--teal);color:#000;border:none;padding:11px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">Entrar</button>
+    <button onclick="document.getElementById('owner-login').classList.remove('show')" style="width:100%;background:none;border:1px solid var(--border);color:var(--muted);padding:9px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit">Cancelar</button>
+    <div id="owner-err" style="font-size:12px;color:#ff4466;margin-top:8px;display:none">Senha incorrecta. Tenta novamente.</div>
+  </div>
+</div>
+</body>
+</html>
