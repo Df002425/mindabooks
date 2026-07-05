@@ -1,1 +1,1234 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindaBooks — Painel Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060e1e;--bg2:#0a1628;--card:#0d1b2e;--card2:#112240;--teal:#00d9a0;--teal2:#00b880;--teal-dim:rgba(0,217,160,.12);--blue:#4488ff;--purple:#8866ff;--red:#ff4466;--yellow:#ffaa00;--orange:#ff7722;--text:#fff;--text2:#b0c4d8;--muted:#607890;--border:#1a2d44;--sidebar:210px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.layout{display:flex;min-height:100vh}
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:50}
+.sb-logo{padding:16px;border-bottom:1px solid var(--border)}
+.sb-logo .lt{font-size:16px;font-weight:900;letter-spacing:-.5px}
+.sb-logo .lt span{color:var(--teal)}
+.ab{display:inline-block;background:var(--teal-dim);border:1px solid rgba(0,217,160,.3);color:var(--teal);font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.sb-group{padding:8px 0}
+.sb-label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:0 14px 5px}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;font-size:13px;color:var(--text2);transition:.15s;border-left:3px solid transparent}
+.ni:hover{background:var(--teal-dim);color:var(--teal)}
+.ni.on{background:var(--teal-dim);color:var(--teal);border-left-color:var(--teal)}
+.ni .nb{background:var(--red);color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;font-weight:700;margin-left:auto}
+.ni .ag-dot{width:7px;height:7px;border-radius:50%;margin-left:auto;flex-shrink:0}
+.ag-dot.running{background:var(--teal);box-shadow:0 0 6px var(--teal);animation:pulse 2s infinite}
+.ag-dot.idle{background:var(--muted)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.sb-status{margin:auto 10px 10px;background:var(--teal-dim);border:1px solid rgba(0,217,160,.2);border-radius:8px;padding:9px 12px;font-size:11px;color:var(--teal);display:flex;align-items:center;gap:6px}
+.st-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;box-shadow:0 0 6px var(--teal)}
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;height:54px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:40}
+.topbar-title{font-size:17px;font-weight:800;flex:1;letter-spacing:-.5px}
+.btn-sm{background:var(--card);border:1px solid var(--border);color:var(--text2);padding:7px 13px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s}
+.btn-sm:hover{border-color:var(--teal);color:var(--teal)}
+.notif-wrap{position:relative}
+.notif-btn{background:var(--card);border:1px solid var(--border);color:var(--text2);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.notif-btn .dot{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;border-radius:50%;width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.btn-new{background:var(--teal);color:#000;border:none;padding:8px 15px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+/* PANELS */
+.panel{display:none;padding:20px;animation:fi .2s ease}
+.panel.on{display:block}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sc1::before{background:linear-gradient(90deg,var(--teal),var(--blue))}
+.sc2::before{background:linear-gradient(90deg,var(--red),var(--orange))}
+.sc3::before{background:linear-gradient(90deg,var(--purple),var(--blue))}
+.sc4::before{background:linear-gradient(90deg,var(--yellow),var(--orange))}
+.sl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.sv{font-size:28px;font-weight:900;letter-spacing:-1px;margin-bottom:4px}
+.sv.t{color:var(--teal)}.sv.r{color:var(--red)}.sv.p{color:var(--purple)}.sv.y{color:var(--yellow)}
+.si{position:absolute;top:14px;right:14px;font-size:22px;opacity:.4}
+.sc{font-size:11px;color:var(--muted)}
+.sc.up{color:var(--teal)}
+/* CHARTS */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+@media(max-width:600px){.two-col{grid-template-columns:1fr}}
+.card-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+.card-box h3{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.live-tag{background:var(--teal-dim);border:1px solid rgba(0,217,160,.3);color:var(--teal);font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px}
+.bars{display:flex;align-items:flex-end;gap:5px;height:90px}
+.bw{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bar{width:100%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--teal),var(--teal2));min-height:4px;transition:.5s}
+.blabel{font-size:9px;color:var(--muted)}
+/* SALES LIST */
+.sale-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.sale-row:last-child{border-bottom:none}
+.sr-icon{font-size:18px;flex-shrink:0}
+.sr-info{flex:1;min-width:0}
+.sr-title{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sr-sub{font-size:10px;color:var(--muted)}
+.sr-val{font-size:13px;font-weight:800;color:var(--teal);text-align:right;flex-shrink:0}
+.sr-time{font-size:9px;color:var(--muted)}
+/* TABLE */
+.section-box{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden}
+.section-box h3{padding:14px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;background:var(--bg2)}
+.data-table td{padding:10px 14px;border-top:1px solid var(--border)}
+.data-table tr:hover td{background:rgba(255,255,255,.02)}
+/* AGENTS */
+.agent-card{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden}
+.agent-header{padding:14px 16px;display:flex;align-items:center;gap:12px}
+.agent-icon-box{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.agent-meta strong{display:block;font-size:14px;font-weight:700;margin-bottom:2px}
+.agent-meta span{font-size:11px;color:var(--muted)}
+.agent-status{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.status-pill{padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700}
+.sp-running{background:rgba(0,217,160,.15);color:var(--teal)}
+.sp-idle{background:rgba(96,120,144,.15);color:var(--muted)}
+.sp-working{background:rgba(255,170,0,.15);color:var(--yellow);animation:pulse 1.5s infinite}
+.agent-body{border-top:1px solid var(--border);padding:16px}
+.agent-output{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:13px;color:var(--text2);line-height:1.7;max-height:260px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
+.agent-output.loading{color:var(--muted);font-style:italic}
+.agent-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn-agent{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:none;transition:.2s}
+.btn-agent.primary{background:var(--teal);color:#000}
+.btn-agent.primary:hover{background:var(--teal2)}
+.btn-agent.sec{background:var(--card2);border:1px solid var(--border);color:var(--text2)}
+.btn-agent.sec:hover{border-color:var(--teal);color:var(--teal)}
+/* WRITER FORM */
+.writer-form{display:grid;gap:12px;margin-bottom:14px}
+.f-group{display:flex;flex-direction:column;gap:5px}
+.f-group label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.f-input{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--text);outline:none;font-family:inherit;transition:.2s;width:100%}
+.f-input:focus{border-color:var(--teal)}
+.f-input::placeholder{color:var(--muted)}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* EBOOK VIEWER */
+.ebook-viewer{background:#fff;color:#1a1a1a;border-radius:12px;overflow:hidden;margin-top:14px;box-shadow:0 4px 30px rgba(0,0,0,.4)}
+.eb-cover{padding:50px 30px;text-align:center;color:#fff;position:relative;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.eb-cover .category-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.8;margin-bottom:12px}
+.eb-cover h1{font-size:clamp(20px,5vw,32px);font-weight:900;line-height:1.2;margin-bottom:10px}
+.eb-cover .subtitle{font-size:14px;opacity:.8;line-height:1.5;margin-bottom:16px}
+.eb-cover .author-line{font-size:13px;opacity:.7}
+.eb-cover .mb-logo{font-size:11px;opacity:.5;margin-top:20px;font-weight:700}
+.eb-content{padding:24px;font-size:14px;line-height:1.8;max-height:400px;overflow-y:auto}
+.eb-content h2{font-size:18px;font-weight:800;color:#1a1a1a;margin:20px 0 10px;border-bottom:2px solid #00d9a0;padding-bottom:6px}
+.eb-content h3{font-size:15px;font-weight:700;color:#333;margin:14px 0 8px}
+.eb-content p{margin-bottom:12px;color:#333}
+.eb-content .index-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dotted #ddd;font-size:13px}
+.eb-content blockquote{border-left:3px solid #00d9a0;padding:10px 16px;margin:12px 0;background:#f5fdfb;border-radius:0 8px 8px 0;font-style:italic;color:#555}
+/* NOTIFS */
+.notif-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px}
+.notif-item.unread{border-left:3px solid var(--teal)}
+.ni-icon{font-size:20px;flex-shrink:0}
+.ni-info{flex:1}
+.ni-title{font-size:13px;font-weight:700;margin-bottom:2px}
+.ni-sub{font-size:12px;color:var(--text2);line-height:1.5}
+.ni-time{font-size:10px;color:var(--muted);margin-top:4px}
+.ni-actions{display:flex;gap:6px;margin-top:6px}
+.ni-btn{background:none;border:1px solid var(--border);color:var(--muted);font-size:10px;padding:3px 8px;border-radius:4px;cursor:pointer;font-family:inherit}
+.ni-btn:hover{border-color:var(--teal);color:var(--teal)}
+/* SETTINGS */
+.settings-card{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:14px}
+.settings-card h3{padding:14px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
+.settings-body{padding:16px}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.setting-row:last-child{border-bottom:none}
+.setting-info strong{display:block;font-size:13px;font-weight:600;margin-bottom:2px}
+.setting-info span{font-size:11px;color:var(--muted)}
+.toggle{width:42px;height:24px;border-radius:12px;background:var(--border);cursor:pointer;position:relative;transition:.3s;flex-shrink:0;border:none}
+.toggle.on{background:var(--teal)}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.3s}
+.toggle.on::after{left:21px}
+.s-input{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--text);outline:none;font-family:inherit;min-width:180px}
+.s-input:focus{border-color:var(--teal)}
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--border);color:var(--text);padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;display:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.5);border-left:3px solid var(--teal)}
+.toast.show{display:block;animation:ti .3s ease}
+@keyframes ti{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;padding:16px;overflow-y:auto;align-items:flex-start;justify-content:center}
+.overlay.open{display:flex}
+.modal-box{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:24px;width:100%;max-width:800px;margin:auto;animation:slideUp .3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-box h2{font-size:18px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+/* CLIENT ROWS */
+.client-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.client-row:last-child{border-bottom:none}
+.cl-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--blue));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#000;flex-shrink:0}
+.cl-info{flex:1}.cl-name{font-size:13px;font-weight:600}.cl-email{font-size:11px;color:var(--muted)}
+.cl-spend{font-size:13px;font-weight:700;color:var(--teal)}
+/* PROGRESS BAR */
+.prog-wrap{margin-bottom:12px}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}
+.prog-bar{background:var(--border);border-radius:4px;height:6px}
+.prog-fill{border-radius:4px;height:6px;transition:.5s}
+/* WA/TG NOTIF LIVE */
+.live-notif{position:fixed;top:70px;right:16px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none;width:280px}
+.ln-item{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;pointer-events:all;animation:slideInR .4s ease;border-left:3px solid var(--teal)}
+@keyframes slideInR{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.ln-item .ln-head{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.ln-item .ln-icon{font-size:14px}
+.ln-item .ln-app{font-size:10px;font-weight:700;color:var(--teal)}
+.ln-item .ln-title{font-size:12px;font-weight:700;margin-bottom:2px}
+.ln-item .ln-msg{font-size:11px;color:var(--text2)}
 
+/* ===== LIVE SALE NOTIFICATIONS ===== */
+#sale-notif-container{position:fixed;top:64px;right:12px;z-index:9999;display:flex;flex-direction:column;gap:10px;width:290px;pointer-events:none}
+.sale-popup{background:linear-gradient(135deg,#0d1b2e,#112240);border:1px solid var(--teal);border-radius:14px;padding:14px;pointer-events:all;animation:popIn .4s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 0 1px rgba(0,217,160,.2);position:relative;overflow:hidden}
+.sale-popup::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--teal),var(--blue))}
+@keyframes popIn{from{opacity:0;transform:translateX(60px) scale(.8)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes popOut{from{opacity:1;transform:translateX(0) scale(1)}to{opacity:0;transform:translateX(60px) scale(.8)}}
+.sale-popup.removing{animation:popOut .3s ease forwards}
+.sp-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sp-badge{background:var(--teal);color:#000;font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;letter-spacing:.5px}
+.sp-time{font-size:10px;color:var(--muted);margin-left:auto}
+.sp-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px;line-height:1}
+.sp-close:hover{color:var(--red)}
+.sp-body{display:flex;align-items:center;gap:10px}
+.sp-icon{font-size:26px;flex-shrink:0}
+.sp-info .sp-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:2px}
+.sp-info .sp-sub{font-size:11px;color:var(--text2);line-height:1.4}
+.sp-val{font-size:16px;font-weight:900;color:var(--teal);text-align:right;flex-shrink:0}
+.sp-footer{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;gap:6px}
+.sp-action{flex:1;background:var(--teal-dim);border:1px solid rgba(0,217,160,.3);color:var(--teal);font-size:10px;font-weight:700;padding:5px 8px;border-radius:6px;cursor:pointer;font-family:inherit;text-align:center}
+.sp-action:hover{background:var(--teal);color:#000}
+/* Sound wave indicator */
+.sp-live{display:flex;align-items:center;gap:3px;margin-left:auto}
+.sp-live span{width:3px;border-radius:2px;background:var(--teal);animation:wave .8s ease-in-out infinite}
+.sp-live span:nth-child(1){height:6px;animation-delay:0s}
+.sp-live span:nth-child(2){height:12px;animation-delay:.1s}
+.sp-live span:nth-child(3){height:8px;animation-delay:.2s}
+.sp-live span:nth-child(4){height:14px;animation-delay:.3s}
+.sp-live span:nth-child(5){height:6px;animation-delay:.4s}
+@keyframes wave{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+/* Notification bell pulse */
+.notif-bell-pulse{animation:bellPulse .6s ease 3}
+@keyframes bellPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+
+/* LOGIN SCREEN */
+#admin-login-screen{position:fixed;inset:0;background:#060e1e;z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-box{width:100%;max-width:340px;background:#0d1b2e;border:1px solid #1a2d44;border-radius:16px;padding:32px 24px;text-align:center}
+.login-logo{font-size:28px;font-weight:900;margin-bottom:4px;letter-spacing:-.5px}
+.login-logo span{color:#00d9a0}
+.login-sub{font-size:13px;color:#607890;margin-bottom:28px}
+.login-label{font-size:11px;font-weight:700;color:#607890;text-transform:uppercase;letter-spacing:.5px;text-align:left;margin-bottom:6px}
+.login-inp{width:100%;background:#112240;border:1.5px solid #1a2d44;border-radius:10px;padding:13px 16px;font-size:15px;color:#fff;outline:none;font-family:inherit;margin-bottom:14px;letter-spacing:2px;transition:.2s}
+.login-inp:focus{border-color:#00d9a0}
+.login-btn{width:100%;background:#00d9a0;color:#000;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:.2s;margin-bottom:10px}
+.login-btn:hover{background:#00b880}
+.login-btn:active{transform:scale(.98)}
+.login-err{font-size:12px;color:#ff4466;margin-top:4px;display:none;background:rgba(255,68,102,.1);border:1px solid rgba(255,68,102,.2);border-radius:6px;padding:8px}
+.login-attempts{font-size:11px;color:#607890;margin-top:8px}
+</style>
+</head>
+<body>
+<div id="admin-login-screen">
+  <div class="login-box">
+    <div class="login-logo">Minda<span>Books</span></div>
+    <div class="login-sub">Painel Administrativo · Acesso Restrito</div>
+    <div class="login-label">Senha de Acesso</div>
+    <input class="login-inp" id="admin-pass-input" type="password" placeholder="••••••••"
+      onkeypress="if(event.key==='Enter')checkAdminPass()"
+      autocomplete="current-password">
+    <button class="login-btn" onclick="checkAdminPass()">🔐 Entrar no Painel</button>
+    <div class="login-err" id="login-err">❌ Senha incorrecta. Tenta novamente.</div>
+    <div class="login-attempts" id="login-attempts"></div>
+  </div>
+</div>
+<script>
+function checkAdminPass() {
+  var inp = document.getElementById('admin-pass-input');
+  var err = document.getElementById('login-err');
+  var att = document.getElementById('login-attempts');
+  var val = inp ? inp.value : '';
+  var STORED_PASS = localStorage.getItem('mb_admin_pass') || 'minda2025';
+
+  if (!val) { if(inp) inp.focus(); return; }
+
+  if (val === STORED_PASS) {
+    var screen = document.getElementById('admin-login-screen');
+    if(screen) screen.style.display = 'none';
+    inp.value = '';
+    if(err) err.style.display = 'none';
+    
+    if(typeof init === 'function') init();
+    if(typeof initNotifSystem === 'function') setTimeout(initNotifSystem, 1000);
+  } else {
+    window._loginAttempts = (window._loginAttempts || 0) + 1;
+    if(inp) inp.value = '';
+    if(inp) inp.focus();
+    if(err) { err.style.display = 'block'; err.textContent = '❌ Senha incorrecta. Tenta novamente.'; }
+    if(window._loginAttempts >= 5) {
+      if(err) err.textContent = '🚫 Demasiadas tentativas. Aguarda 1 minuto.';
+      if(inp) inp.disabled = true;
+      setTimeout(function(){ window._loginAttempts=0; if(inp) inp.disabled=false; if(err) err.style.display='none'; }, 60000);
+    } else {
+      var left = 5 - window._loginAttempts;
+      if(att) att.textContent = left + ' tentativa' + (left!==1?'s':'') + ' restante' + (left!==1?'s':'');
+    }
+  }
+}
+</script>
+
+
+<!-- LIVE NOTIFICATION CONTAINER -->
+<div class="live-notif" id="live-notif-container"></div>
+
+<div class="layout">
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sb-logo">
+    <div class="lt">Minda<span>Books</span></div>
+    <div class="ab">Admin</div>
+  </div>
+  <div class="sb-group">
+    <div class="sb-label">Principal</div>
+    <div class="ni on" onclick="nav('dashboard',this)">📊 Dashboard</div>
+    <div class="ni" onclick="nav('vendas',this)">💳 Vendas <span class="nb" id="nb-v">0</span></div>
+    <div class="ni" onclick="nav('notificacoes',this)">🔔 Notificações <span class="nb" id="nb-n">0</span></div>
+  </div>
+  <div class="sb-group">
+    <div class="sb-label">Loja</div>
+    <div class="ni" onclick="nav('ebooks',this)">📚 Ebooks</div>
+    <div class="ni" onclick="nav('clientes',this)">👥 Clientes</div>
+    <div class="ni" onclick="nav('pagamentos',this)">💰 Pagamentos</div>
+  </div>
+  <div class="sb-group">
+    <div class="sb-label">Agentes IA</div>
+    <div class="ni" onclick="nav('marketing',this)">📣 Marketing <span class="ag-dot running" id="dot-mkt"></span></div>
+    <div class="ni" onclick="nav('escritor',this)">✍️ Escritor <span class="ag-dot idle" id="dot-wrt"></span></div>
+    <div class="ni" onclick="nav('vendas-ag',this)">💼 Vendas IA <span class="ag-dot running" id="dot-sal"></span></div>
+    <div class="ni" onclick="nav('notif-ag',this)">🔔 Notificações IA <span class="ag-dot running" id="dot-notag"></span></div>
+    <div class="ni" onclick="nav('analise',this)">📈 Análise IA <span class="ag-dot running" id="dot-anl"></span></div>
+    <div class="ni" onclick="nav('relatorios',this)">📊 Relatórios</div>
+  </div>
+  <div class="sb-group">
+    <div class="sb-label">Sistema</div>
+    <div class="ni" onclick="nav('configuracoes',this)">⚙️ Configurações</div>
+    <div class="ni" onclick="window.open('/mindabooks/MindaBooks-Loja.html','_self')">🌐 Ver Loja</div>
+    <div class="ni" style="color:var(--red)" onclick="doLogout()">🚪 Sair</div>
+  </div>
+  <div class="sb-status"><div class="st-dot"></div> Sistema activo · Agentes a correr</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+<div class="topbar">
+  <div class="topbar-title" id="topbar-title">📊 Dashboard</div>
+  <button class="btn-sm" onclick="refreshAll()">↻ Actualizar</button>
+  <div class="notif-wrap">
+    <button class="notif-btn" onclick="nav('notificacoes',null)">🔔<span class="dot" id="notif-dot">0</span></button>
+  </div>
+  <button class="btn-new" onclick="nav('escritor',null)">+ Novo Ebook</button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="panel on" id="panel-dashboard">
+  <div class="stats-grid">
+    <div class="stat-card sc1"><div class="sl">Receita Total</div><div class="sv t" id="s-receita">Mt 0</div><div class="sc up" id="s-receita-sub">↑ carregando...</div><div class="si">💰</div></div>
+    <div class="stat-card sc2"><div class="sl">Vendas Hoje</div><div class="sv r" id="s-hoje">0</div><div class="sc up" id="s-hoje-sub">↑ +0 hoje</div><div class="si">🛒</div></div>
+    <div class="stat-card sc3"><div class="sl">Ebooks Activos</div><div class="sv p" id="s-ebooks">0</div><div class="sc">Publicados na loja</div><div class="si">📚</div></div>
+    <div class="stat-card sc4"><div class="sl">Clientes</div><div class="sv y" id="s-clientes">0</div><div class="sc up" id="s-cli-sub">↑ novos</div><div class="si">👥</div></div>
+  </div>
+  <div class="two-col">
+    <div class="card-box">
+      <h3>📊 Vendas — 7 dias <span class="live-tag">● Ao vivo</span></h3>
+      <div class="bars" id="sales-bars"></div>
+    </div>
+    <div class="card-box">
+      <h3>🔔 Últimas Vendas <button class="btn-sm" style="font-size:10px;padding:3px 8px" onclick="nav('vendas',null)">Ver todas</button></h3>
+      <div id="recent-sales"></div>
+    </div>
+  </div>
+  <div class="section-box">
+    <h3>🏆 Ebooks Mais Vendidos</h3>
+    <table class="data-table"><thead><tr><th>#</th><th>Ebook</th><th>Preço</th><th>Vendas</th><th>Receita</th><th>Estado</th></tr></thead>
+    <tbody id="top-books"></tbody></table>
+  </div>
+</div>
+
+<!-- VENDAS -->
+<div class="panel" id="panel-vendas">
+  <div class="section-box">
+    <h3>💳 Todas as Vendas</h3>
+    <table class="data-table"><thead><tr><th>ID</th><th>Ebook</th><th>Cliente</th><th>Valor</th><th>Método</th><th>Estado</th><th>Data</th></tr></thead>
+    <tbody id="all-sales"></tbody></table>
+  </div>
+</div>
+
+<!-- NOTIFICAÇÕES -->
+<div class="panel" id="panel-notificacoes">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <div style="font-size:15px;font-weight:700">🔔 Central de Notificações</div>
+    <button class="btn-sm" onclick="markAllRead()">✓ Marcar todas lidas</button>
+  </div>
+  <div id="notif-list"></div>
+</div>
+
+<!-- EBOOKS -->
+<div class="panel" id="panel-ebooks">
+  <div class="section-box" style="padding:16px">
+    <h3 style="padding:0 0 14px;border:none">➕ Adicionar Ebook</h3>
+    <div class="f-row" style="margin-bottom:10px">
+      <div class="f-group"><label>Título</label><input class="f-input" id="nb-title" placeholder="Ex: Mente Milionária"></div>
+      <div class="f-group"><label>Autor</label><input class="f-input" id="nb-author" placeholder="Ex: João Silva"></div>
+    </div>
+    <div class="f-row" style="margin-bottom:10px">
+      <div class="f-group"><label>Preço (USD)</label><input class="f-input" id="nb-price" type="number" placeholder="4.00"></div>
+      <div class="f-group"><label>Categoria</label>
+        <select class="f-input" id="nb-cat"><option>Motivação</option><option>Saúde</option><option>Finanças</option><option>Produtividade</option><option>Negócios</option><option>Fé</option><option>Relacionamentos</option><option>Vida</option></select>
+      </div>
+    </div>
+    <div class="f-group" style="margin-bottom:12px"><label>Descrição</label><input class="f-input" id="nb-desc" placeholder="Uma frase sobre o livro..."></div>
+    <button class="btn-new" onclick="addBook()">+ Adicionar ao Catálogo</button>
+  </div>
+  <div class="section-box">
+    <h3>📚 Catálogo (<span id="books-count">0</span> ebooks)</h3>
+    <table class="data-table"><thead><tr><th>Título</th><th>Autor</th><th>Preço</th><th>Categoria</th><th>Ação</th></tr></thead>
+    <tbody id="books-admin-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- CLIENTES -->
+<div class="panel" id="panel-clientes">
+  <div class="section-box"><h3>👥 Clientes (<span id="cli-count">0</span>)</h3>
+  <div style="padding:14px 16px" id="clients-list"></div></div>
+</div>
+
+<!-- PAGAMENTOS -->
+<div class="panel" id="panel-pagamentos">
+  <div class="section-box"><h3>💰 Histórico de Pagamentos</h3>
+  <table class="data-table"><thead><tr><th>ID</th><th>Ebook</th><th>Método</th><th>Mt</th><th>USD</th><th>Data</th></tr></thead>
+  <tbody id="pay-tbody"></tbody></table></div>
+</div>
+
+<!-- AGENTE MARKETING -->
+<div class="panel" id="panel-marketing">
+  <div class="agent-card">
+    <div class="agent-header">
+      <div class="agent-icon-box" style="background:linear-gradient(135deg,#c8102e,#ff4488)">📣</div>
+      <div class="agent-meta"><strong>Agente de Marketing IA</strong><span>Cria estratégias e conteúdo publicitário automaticamente todos os dias</span></div>
+      <div class="agent-status">
+        <span class="status-pill sp-running" id="mkt-status">● A Trabalhar</span>
+        <span style="font-size:10px;color:var(--muted)" id="mkt-last">Última execução: agora</span>
+      </div>
+    </div>
+    <div class="agent-body">
+      <div style="margin-bottom:10px;font-size:12px;color:var(--muted)">O agente analisa as vendas, os ebooks e cria automaticamente conteúdo de marketing diário para Instagram, TikTok e anúncios pagos.</div>
+      <div class="agent-output loading" id="mkt-output">⏳ Agente a analisar dados e a criar conteúdo de marketing...</div>
+      <div class="agent-actions">
+        <button class="btn-agent primary" onclick="runMarketing()">🔄 Regenerar Agora</button>
+        <button class="btn-agent sec" onclick="copyOutput('mkt-output')">📋 Copiar Conteúdo</button>
+        <button class="btn-agent sec" onclick="runMarketingType('instagram')">📸 Só Instagram</button>
+        <button class="btn-agent sec" onclick="runMarketingType('tiktok')">🎵 Só TikTok</button>
+        <button class="btn-agent sec" onclick="runMarketingType('anuncio')">💰 Só Anúncio Pago</button>
+      </div>
+    </div>
+  </div>
+  <div class="agent-card">
+    <div class="agent-header">
+      <div class="agent-icon-box" style="background:linear-gradient(135deg,#1a3a2a,#0d5c3a)">📅</div>
+      <div class="agent-meta"><strong>Calendário de Conteúdo — Próximos 7 Dias</strong><span>Plano automático de publicações</span></div>
+    </div>
+    <div class="agent-body">
+      <div class="agent-output loading" id="mkt-calendar">⏳ A criar calendário semanal de conteúdo...</div>
+      <div class="agent-actions">
+        <button class="btn-agent primary" onclick="runCalendar()">🔄 Gerar Calendário</button>
+        <button class="btn-agent sec" onclick="copyOutput('mkt-calendar')">📋 Copiar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AGENTE ESCRITOR -->
+<div class="panel" id="panel-escritor">
+  <div class="agent-card">
+    <div class="agent-header">
+      <div class="agent-icon-box" style="background:linear-gradient(135deg,#1a2a4a,#2d3a8c)">✍️</div>
+      <div class="agent-meta"><strong>Agente Escritor IA</strong><span>Produz ebooks completos com capa, índice, introdução e capítulos</span></div>
+      <div class="agent-status"><span class="status-pill sp-idle" id="writer-status">● Em Espera</span></div>
+    </div>
+    <div class="agent-body">
+      <div style="font-size:13px;font-weight:700;color:var(--teal);margin-bottom:12px">📝 Dá orientações — o agente escreve o ebook completo:</div>
+      <div class="writer-form">
+        <div class="f-row">
+          <div class="f-group"><label>Tema / Título do Ebook</label><input class="f-input" id="w-tema" placeholder="Ex: Como Gerir Dinheiro em Moçambique"></div>
+          <div class="f-group"><label>Número de Páginas</label><input class="f-input" id="w-pages" type="number" placeholder="Ex: 50" min="10" max="200"></div>
+        </div>
+        <div class="f-row">
+          <div class="f-group"><label>Categoria</label>
+            <select class="f-input" id="w-cat"><option>Motivação</option><option>Saúde</option><option>Finanças</option><option>Produtividade</option><option>Negócios</option><option>Fé</option><option>Relacionamentos</option><option>Vida</option></select>
+          </div>
+          <div class="f-group"><label>Público-alvo</label><input class="f-input" id="w-publico" placeholder="Ex: Jovens moçambicanos 18-35 anos"></div>
+        </div>
+        <div class="f-group"><label>Descrição Curta / Orientações</label><textarea class="f-input" id="w-desc" placeholder="Ex: Um guia prático sobre como poupar dinheiro com salário mínimo, criar uma reserva de emergência e começar a investir. Tom motivador e linguagem simples." rows="3" style="resize:vertical"></textarea></div>
+        <div class="f-row">
+          <div class="f-group"><label>Cor da Capa</label>
+            <select class="f-input" id="w-cor">
+              <option value="linear-gradient(135deg,#1a3a2a,#0d5c3a)">🟢 Verde Escuro</option>
+              <option value="linear-gradient(135deg,#1a2a4a,#2d3a8c)">🔵 Azul Profundo</option>
+              <option value="linear-gradient(135deg,#3a1a1a,#8c2d2d)">🔴 Vermelho</option>
+              <option value="linear-gradient(135deg,#2a1a3a,#6d2d8c)">🟣 Roxo</option>
+              <option value="linear-gradient(135deg,#1a3a3a,#2d8c7a)">🩵 Verde-Azul</option>
+              <option value="linear-gradient(135deg,#3a2a1a,#8c6d2d)">🟤 Dourado</option>
+            </select>
+          </div>
+          <div class="f-group"><label>Emoji da Capa</label><input class="f-input" id="w-emoji" placeholder="Ex: 💰" maxlength="4" value="📚"></div>
+        </div>
+      </div>
+      <button class="btn-agent primary" id="writer-btn" onclick="runWriter()" style="width:100%;padding:13px;font-size:14px">✍️ Gerar Ebook Completo com IA</button>
+      <div id="writer-output" style="margin-top:14px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- AGENTE VENDAS -->
+<div class="panel" id="panel-vendas-ag">
+  <div class="agent-card">
+    <div class="agent-header">
+      <div class="agent-icon-box" style="background:linear-gradient(135deg,#3a1a1a,#8c2d2d)">💼</div>
+      <div class="agent-meta"><strong>Agente de Vendas IA</strong><span>Analisa e optimiza as vendas automaticamente</span></div>
+      <div class="agent-status">
+        <span class="status-pill sp-running" id="sales-ag-status">● A Trabalhar</span>
+        <span style="font-size:10px;color:var(--muted)" id="sales-ag-last">A analisar...</span>
+      </div>
+    </div>
+    <div class="agent-body">
+      <div class="agent-output loading" id="sales-ag-output">⏳ Agente a analisar dados de vendas e a criar estratégias...</div>
+      <div class="agent-actions">
+        <button class="btn-agent primary" onclick="runSalesAgent()">🔄 Actualizar Análise</button>
+        <button class="btn-agent sec" onclick="copyOutput('sales-ag-output')">📋 Copiar</button>
+        <button class="btn-agent sec" onclick="runSalesType('preco')">💰 Estratégia de Preços</button>
+        <button class="btn-agent sec" onclick="runSalesType('conversao')">📈 Aumentar Conversão</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AGENTE NOTIFICAÇÕES -->
+<div class="panel" id="panel-notif-ag">
+  <div class="agent-card">
+    <div class="agent-header">
+      <div class="agent-icon-box" style="background:linear-gradient(135deg,#1a3a3a,#2d8c7a)">🔔</div>
+      <div class="agent-meta"><strong>Agente de Notificações IA</strong><span>Envia alertas automáticos para WhatsApp e Telegram a cada venda</span></div>
+      <div class="agent-status"><span class="status-pill sp-running">● Activo</span></div>
+    </div>
+    <div class="agent-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <div style="background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.2);border-radius:10px;padding:14px">
+          <div style="font-size:18px;margin-bottom:6px">📱</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px">WhatsApp</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Notificação automática para o teu número</div>
+          <div class="f-group" style="margin-bottom:8px"><label style="font-size:10px">Número (com código país)</label><input class="f-input" id="wa-number" placeholder="+258841234567" style="font-size:12px;padding:7px 10px"></div>
+          <button class="btn-agent primary" onclick="testWhatsApp()" style="width:100%;font-size:12px">📤 Testar WhatsApp</button>
+        </div>
+        <div style="background:rgba(0,136,204,.08);border:1px solid rgba(0,136,204,.2);border-radius:10px;padding:14px">
+          <div style="font-size:18px;margin-bottom:6px">✈️</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px">Telegram</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Envia para o teu bot Telegram</div>
+          <div class="f-group" style="margin-bottom:6px"><label style="font-size:10px">Token do Bot</label><input class="f-input" id="tg-token" placeholder="123456:ABCdef..." style="font-size:12px;padding:7px 10px"></div>
+          <div class="f-group" style="margin-bottom:8px"><label style="font-size:10px">Chat ID</label><input class="f-input" id="tg-chatid" placeholder="-1001234567890" style="font-size:12px;padding:7px 10px"></div>
+          <button class="btn-agent primary" onclick="testTelegram()" style="width:100%;font-size:12px">📤 Testar Telegram</button>
+        </div>
+      </div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px">📋 Últimas Notificações Enviadas <span class="live-tag">● Ao vivo</span></div>
+      <div class="agent-output" id="notif-ag-log" style="max-height:200px">Aguardando vendas para enviar notificações...</div>
+    </div>
+  </div>
+  <div class="agent-card">
+    <div class="agent-header">
+      <div class="agent-icon-box" style="background:linear-gradient(135deg,#2a1a3a,#6d2d8c)">🏪</div>
+      <div class="agent-meta"><strong>Notificações na Loja</strong><span>Pop-ups de vendas recentes que aparecem para os clientes</span></div>
+      <div class="agent-status"><span class="status-pill sp-running">● Activo</span></div>
+    </div>
+    <div class="agent-body">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Cada nova venda gera automaticamente uma notificação popup na loja que os clientes vêem — cria prova social e aumenta conversão.</div>
+      <button class="btn-agent primary" onclick="testLiveNotif()">🧪 Simular Notificação na Loja</button>
+      <button class="btn-agent sec" onclick="simulateSale()">💰 Simular Venda Completa</button>
+    </div>
+  </div>
+</div>
+
+<!-- AGENTE ANÁLISE -->
+<div class="panel" id="panel-analise">
+  <div class="agent-card">
+    <div class="agent-header">
+      <div class="agent-icon-box" style="background:linear-gradient(135deg,#3a2a1a,#8c6d2d)">📈</div>
+      <div class="agent-meta"><strong>Agente de Análise IA</strong><span>Business intelligence automático — análise profunda do negócio</span></div>
+      <div class="agent-status">
+        <span class="status-pill sp-running" id="anl-status">● A Analisar</span>
+        <span style="font-size:10px;color:var(--muted)" id="anl-last">Última análise: agora</span>
+      </div>
+    </div>
+    <div class="agent-body">
+      <div class="agent-output loading" id="anl-output">⏳ Agente a realizar análise profunda do negócio...</div>
+      <div class="agent-actions">
+        <button class="btn-agent primary" onclick="runAnalysis()">🔄 Nova Análise</button>
+        <button class="btn-agent sec" onclick="copyOutput('anl-output')">📋 Copiar</button>
+        <button class="btn-agent sec" onclick="runAnalysisType('previsao')">🔮 Previsão 30 Dias</button>
+        <button class="btn-agent sec" onclick="runAnalysisType('concorrencia')">🏆 Análise Mercado</button>
+      </div>
+    </div>
+  </div>
+  <div class="stats-grid" style="margin-top:16px">
+    <div class="stat-card sc1"><div class="sl">Taxa de Conversão</div><div class="sv t" id="anl-conv">0%</div><div class="sc">Visitas → Compras</div></div>
+    <div class="stat-card sc2"><div class="sl">Ticket Médio</div><div class="sv r" id="anl-ticket">Mt 0</div><div class="sc">Por pedido</div></div>
+    <div class="stat-card sc3"><div class="sl">Ebook Mais Vendido</div><div class="sv p" id="anl-top" style="font-size:14px">—</div><div class="sc">Top performer</div></div>
+    <div class="stat-card sc4"><div class="sl">Método Preferido</div><div class="sv y" id="anl-method" style="font-size:14px">—</div><div class="sc">Pagamento mais usado</div></div>
+  </div>
+</div>
+
+<!-- RELATÓRIOS -->
+<div class="panel" id="panel-relatorios">
+  <div class="stats-grid">
+    <div class="stat-card sc1"><div class="sl">Receita Total</div><div class="sv t" id="r-receita">Mt 0</div></div>
+    <div class="stat-card sc2"><div class="sl">Total Pedidos</div><div class="sv r" id="r-pedidos">0</div></div>
+    <div class="stat-card sc3"><div class="sl">Método Popular</div><div class="sv p" id="r-method" style="font-size:16px">—</div></div>
+    <div class="stat-card sc4"><div class="sl">Ticket Médio</div><div class="sv y" id="r-ticket">Mt 0</div></div>
+  </div>
+  <div class="section-box"><h3>📊 Pagamentos por Método</h3><div style="padding:16px" id="pay-breakdown"></div></div>
+  <div class="section-box"><h3>📚 Vendas por Ebook</h3><div style="padding:16px" id="book-breakdown"></div></div>
+</div>
+
+<!-- CONFIGURAÇÕES -->
+<div class="panel" id="panel-configuracoes">
+  <div class="settings-card"><h3>💳 Os Meus Dados de Pagamento</h3>
+    <div class="settings-body">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5">Estes dados aparecem automaticamente para os clientes quando escolhem o método de pagamento na loja.</p>
+      <div style="display:grid;gap:10px">
+        <div class="f-group"><label>👤 Teu Nome Completo</label><input class="f-input" id="cfg-owner-name" placeholder="Ex: Domingos Cuna"></div>
+        <div class="f-group"><label>📱 Número M-Pesa</label><input class="f-input" id="cfg-mpesa" placeholder="+258 84 XXX XXXX" type="tel"></div>
+        <div class="f-group"><label>💚 Número E-Mola</label><input class="f-input" id="cfg-emola" placeholder="+258 86 XXX XXXX" type="tel"></div>
+        <div class="f-group"><label>📧 Email PayPal</label><input class="f-input" id="cfg-paypal" placeholder="seupaypal@email.com" type="email"></div>
+        <div class="f-group"><label>🏦 IBAN (Banco Internacional)</label><input class="f-input" id="cfg-iban" placeholder="MZ59 0001 0000 0000 0000 0000 X"></div>
+        <div class="f-group"><label>🔢 NIB (Banco Nacional)</label><input class="f-input" id="cfg-nib" placeholder="NIB: 0001.0000.00000000000.X"></div>
+        <div class="f-group"><label>🏧 Referência Multicaixa</label><input class="f-input" id="cfg-multicaixa" placeholder="MCX-MB-2025"></div>
+      </div>
+      <div style="margin-top:14px;background:var(--teal-dim);border:1px solid rgba(0,217,160,.2);border-radius:8px;padding:12px;font-size:12px;color:var(--text2)">
+        ✅ <strong style="color:var(--teal)">Preenche pelo menos o M-Pesa e E-Mola</strong> para os clientes de Moçambique. Os restantes são opcionais conforme os métodos que aceitas.
+      </div>
+    </div>
+  </div>
+  <div class="settings-card"><h3>🏪 Loja</h3>
+    <div class="settings-body">
+      <div style="margin-bottom:10px"><div class="f-group"><label>Nome da Loja</label><input class="f-input" id="cfg-name" value="MindaBooks"></div></div>
+      <div style="margin-bottom:10px"><div class="f-group"><label>Email de Contacto</label><input class="f-input" id="cfg-email" placeholder="seuemail@gmail.com"></div></div>
+      <div style="margin-bottom:10px"><div class="f-group"><label>WhatsApp de Suporte</label><input class="f-input" id="cfg-wa" placeholder="+258 84 XXX XXXX"></div></div>
+      <div class="setting-row"><div class="setting-info"><strong>Loja Activa</strong><span>Clientes podem comprar</span></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+  </div>
+  <div class="settings-card"><h3>🔔 Notificações Automáticas</h3>
+    <div class="settings-body">
+      <div style="margin-bottom:10px"><div class="f-group"><label>WhatsApp (número com código país)</label><input class="f-input" id="cfg-wa-notif" placeholder="+258841234567"></div></div>
+      <div style="margin-bottom:10px"><div class="f-group"><label>Telegram Bot Token</label><input class="f-input" id="cfg-tg-token" placeholder="123456789:ABCdefGHI..."></div></div>
+      <div style="margin-bottom:10px"><div class="f-group"><label>Telegram Chat ID</label><input class="f-input" id="cfg-tg-chat" placeholder="-1001234567890"></div></div>
+      <div class="setting-row"><div class="setting-info"><strong>Notificar a cada venda</strong><span>WhatsApp + Telegram automático</span></div><button class="toggle on" id="tog-notif" onclick="this.classList.toggle('on')"></button></div>
+      <div class="setting-row"><div class="setting-info"><strong>Pop-ups na Loja</strong><span>Mostrar notificações de vendas aos clientes</span></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+  </div>
+  <div class="settings-card"><h3>🤖 Agentes IA</h3>
+    <div class="settings-body">
+      <div class="setting-row"><div class="setting-info"><strong>Marketing Diário Automático</strong><span>Gera conteúdo todos os dias às 08:00</span></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="setting-row"><div class="setting-info"><strong>Análise Automática</strong><span>Analisa dados a cada 6 horas</span></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="setting-row"><div class="setting-info"><strong>Vendas IA Automático</strong><span>Estratégias actualizadas a cada dia</span></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+  </div>
+  <div class="settings-card"><h3>🔐 Segurança</h3>
+    <div class="settings-body">
+      <div style="margin-bottom:10px"><div class="f-group"><label>Nova Senha Admin</label><input class="f-input" id="cfg-newpass" type="password" placeholder="••••••••"></div></div>
+      <div class="setting-row"><div class="setting-info"><strong>Notificações de Venda</strong><span>Receber alertas de novas vendas</span></div><button class="toggle on" id="tog-notif" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+  </div>
+  <button class="btn-new" onclick="saveSettings()">💾 Guardar Todos os Dados</button>
+</div>
+
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- EBOOK MODAL -->
+<div class="overlay" id="ov-ebook">
+  <div class="modal-box" style="max-width:700px">
+    <h2>📖 Ebook Gerado</h2>
+    <div id="ebook-content"></div>
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+      <button class="btn-agent primary" onclick="addEbookToStore()">➕ Adicionar à Loja</button>
+      <button class="btn-agent sec" onclick="printEbook()">🖨️ Imprimir / Salvar PDF</button>
+      <button class="btn-agent sec" onclick="closeOv('ov-ebook')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const RATE=63, BOOKS_KEY='mb_books', SALES_KEY='mb_sales', NOTIF_KEY='mb_notifs';
+let generatedEbook=null;
+
+const DEFAULT_BOOKS=[
+  {id:1,title:'Mente Imbatível',author:'Pedro Sitoe',cat:'Motivação',price:4,emoji:'💪',color:'linear-gradient(135deg,#1a3a2a,#0d5c3a)',desc:'Desenvolve uma mentalidade de alta performance.',preview:'A mente humana é o instrumento mais poderoso que existe...'},
+  {id:2,title:'Vida Real, Soluções Criativas',author:'Domingos Cuna',cat:'Vida',price:4,emoji:'💡',color:'linear-gradient(135deg,#1a2a4a,#2d3a8c)',desc:'Estratégias práticas para resolver desafios.',preview:'Todos nós enfrentamos momentos difíceis...'},
+  {id:3,title:'Finanças Pessoais Agora',author:'Carlos Tembe',cat:'Finanças',price:4,emoji:'💰',color:'linear-gradient(135deg,#3a1a1a,#8c2d2d)',desc:'Aprende a gerir o dinheiro inteligentemente.',preview:'Ninguém ensina nas escolas como o dinheiro funciona...'},
+  {id:4,title:'Foco Total',author:'Ana Machava',cat:'Produtividade',price:4,emoji:'⚡',color:'linear-gradient(135deg,#2a1a3a,#6d2d8c)',desc:'Elimina as distrações e alcança resultados.',preview:'Vivemos na era da distracção...'},
+  {id:5,title:'Negócio do Zero',author:'Luciana Bila',cat:'Negócios',price:4,emoji:'🚀',color:'linear-gradient(135deg,#1a3a3a,#2d8c7a)',desc:'Como criar um negócio lucrativo.',preview:'Moçambique está em transformação...'},
+  {id:6,title:'Corpo e Alma Saudáveis',author:'Fátima Nhaca',cat:'Saúde',price:4,emoji:'🧠',color:'linear-gradient(135deg,#3a2a1a,#8c6d2d)',desc:'Guia de saúde física e mental.',preview:'A saúde não é um luxo...'},
+  {id:7,title:'Fé que Move',author:'Pastor Jonas',cat:'Fé',price:4,emoji:'🕯️',color:'linear-gradient(135deg,#1a1a3a,#2d2d8c)',desc:'Fundamentos espirituais para uma vida com propósito.',preview:'A fé é a força que move o impossível...'},
+  {id:8,title:'Relacionamentos que Duram',author:'Rosa Mondlane',cat:'Relacionamentos',price:4,emoji:'❤️',color:'linear-gradient(135deg,#3a1a2a,#8c2d5c)',desc:'Como construir relacionamentos saudáveis.',preview:'Os relacionamentos são a base da felicidade...'},
+];
+const CITIES=['Maputo','Beira','Nampula','Tete','Quelimane','Luanda','Lobito','São Paulo','Lisboa'];
+const NAMES=['Pedro L.','Maria S.','João M.','Ana F.','Carlos R.','Fátima N.','Lucas O.'];
+const METHODS=['M-Pesa','PayPal','E-Mola','Banco','Cartão','Multicaixa'];
+
+function getBooks(){try{const s=localStorage.getItem(BOOKS_KEY);if(s)return JSON.parse(s);}catch(e){}return DEFAULT_BOOKS;}
+function saveBooks(b){localStorage.setItem(BOOKS_KEY,JSON.stringify(b));}
+function getSales(){try{return JSON.parse(localStorage.getItem(SALES_KEY)||'[]');}catch(e){return[];}}
+function saveSales(s){localStorage.setItem(SALES_KEY,JSON.stringify(s));}
+function getNotifs(){try{return JSON.parse(localStorage.getItem(NOTIF_KEY)||'[]');}catch(e){return[];}}
+function saveNotifs(n){localStorage.setItem(NOTIF_KEY,JSON.stringify(n));}
+
+// NAV
+function nav(sec,el){
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  if(el)el.classList.add('on');
+  document.getElementById('panel-'+sec).classList.add('on');
+  const titles={dashboard:'📊 Dashboard',vendas:'💳 Vendas',notificacoes:'🔔 Notificações',ebooks:'📚 Ebooks',clientes:'👥 Clientes',pagamentos:'💰 Pagamentos',marketing:'📣 Agente de Marketing IA','vendas-ag':'💼 Agente de Vendas IA',escritor:'✍️ Agente Escritor IA','notif-ag':'🔔 Agente de Notificações IA',analise:'📈 Agente de Análise IA',relatorios:'📊 Relatórios',configuracoes:'⚙️ Configurações'};
+  document.getElementById('topbar-title').textContent=titles[sec]||sec;
+  if(sec==='vendas')renderAllSales();
+  if(sec==='ebooks')renderBooksAdmin();
+  if(sec==='clientes')renderClients();
+  if(sec==='pagamentos')renderPayments();
+  if(sec==='notificacoes')renderNotifs();
+  if(sec==='relatorios')renderReports();
+}
+function doLogout(){window.open('/mindabooks/MindaBooks-Loja.html','_self');}
+
+// STATS
+function refreshAll(){
+  const sales=getSales(),books=getBooks();
+  const total=sales.reduce((s,v)=>s+v.price,0);
+  const today=sales.filter(s=>new Date(s.date).toDateString()===new Date().toDateString());
+  const clients=[...new Set(sales.map(s=>s.email))];
+  const paid=sales.filter(s=>s.status==='Pago');
+  document.getElementById('s-receita').textContent='Mt '+(total*RATE).toFixed(0);
+  document.getElementById('s-receita-sub').textContent='↑ +18% vs semana passada';
+  document.getElementById('s-hoje').textContent=today.length;
+  document.getElementById('s-hoje-sub').textContent='↑ +'+today.length+' hoje';
+  document.getElementById('s-ebooks').textContent=books.length;
+  document.getElementById('s-clientes').textContent=clients.length;
+  document.getElementById('s-cli-sub').textContent='↑ '+Math.min(clients.length,3)+' novos esta semana';
+  // Analysis stats
+  const methods={};sales.forEach(s=>{methods[s.payment]=(methods[s.payment]||0)+1;});
+  const topM=Object.entries(methods).sort((a,b)=>b[1]-a[1])[0];
+  const bookSales={};sales.forEach(s=>{bookSales[s.book]=(bookSales[s.book]||0)+1;});
+  const topB=Object.entries(bookSales).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('anl-conv').textContent=sales.length?Math.min(100,Math.round(sales.length/Math.max(1,sales.length+5)*100))+'%':'0%';
+  document.getElementById('anl-ticket').textContent=sales.length?'Mt '+(total/sales.length*RATE).toFixed(0):'Mt 0';
+  document.getElementById('anl-top').textContent=topB?topB[0].split(' ')[0]:'—';
+  document.getElementById('anl-method').textContent=topM?topM[0]:'—';
+  // Reports
+  document.getElementById('r-receita').textContent='Mt '+(total*RATE).toFixed(0);
+  document.getElementById('r-pedidos').textContent=sales.length;
+  document.getElementById('r-method').textContent=topM?topM[0]:'—';
+  document.getElementById('r-ticket').textContent=sales.length?'Mt '+(total/sales.length*RATE).toFixed(0):'Mt 0';
+  // Badges
+  const unread=getNotifs().filter(n=>!n.read).length;
+  document.getElementById('nb-n').textContent=unread;
+  document.getElementById('notif-dot').textContent=unread;
+  document.getElementById('nb-v').textContent=sales.length;
+  renderChart();renderRecentSales();renderTopBooks();
+}
+
+function renderChart(){
+  const sales=getSales();
+  const days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const counts=new Array(7).fill(0);
+  sales.forEach(s=>{const d=new Date(s.date);const diff=Math.floor((Date.now()-d.getTime())/(24*3600*1000));if(diff<7)counts[6-diff]++;});
+  if(!counts.some(c=>c>0))for(let i=0;i<7;i++)counts[i]=Math.floor(Math.random()*5)+1;
+  const max=Math.max(...counts,1);
+  const today=new Date().getDay();
+  document.getElementById('sales-bars').innerHTML=counts.map((c,i)=>{
+    const di=(today-6+i+7)%7;const h=Math.max((c/max)*85,4);
+    return`<div class="bw"><div class="bar" style="height:${h}px"></div><div class="blabel">${days[di]}</div></div>`;
+  }).join('');
+}
+
+function renderRecentSales(){
+  const sales=getSales().slice(0,5);
+  document.getElementById('recent-sales').innerHTML=sales.length
+    ?sales.map(s=>`<div class="sale-row"><div class="sr-icon">🎉</div><div class="sr-info"><div class="sr-title">${s.book}</div><div class="sr-sub">${s.customer||'—'} · ${s.city||'Maputo'} · ${s.payment}</div></div><div><div class="sr-val">Mt ${(s.price*RATE).toFixed(0)}</div><div class="sr-time">${ago(s.date)}</div></div></div>`).join('')
+    :'<div style="color:var(--muted);font-size:12px;text-align:center;padding:20px">Nenhuma venda ainda.</div>';
+}
+
+function renderTopBooks(){
+  const sales=getSales(),books=getBooks();
+  const bs={};sales.forEach(s=>{bs[s.book]=(bs[s.book]||0)+1;});
+  const sorted=books.map(b=>({...b,sales:bs[b.title]||0})).sort((a,b)=>b.sales-a.sales);
+  document.getElementById('top-books').innerHTML=sorted.map((b,i)=>`<tr>
+    <td style="color:var(--teal);font-weight:700">#${i+1}</td>
+    <td style="font-weight:600">${b.emoji} ${b.title}</td>
+    <td>Mt ${(b.price*RATE)}</td><td>${b.sales}</td>
+    <td style="color:var(--teal)">Mt ${(b.sales*b.price*RATE)}</td>
+    <td><span style="color:var(--teal);font-size:10px">● Activo</span></td></tr>`).join('');
+}
+
+function renderAllSales(){
+  const s=getSales();
+  document.getElementById('all-sales').innerHTML=s.length
+    ?s.map(v=>`<tr><td style="font-size:10px;font-family:monospace;color:var(--muted)">${v.id}</td><td style="font-weight:600">${v.book}</td><td>${v.customer||'—'}</td><td style="color:var(--teal);font-weight:700">Mt ${(v.price*RATE).toFixed(0)}</td><td><span style="background:var(--teal-dim);color:var(--teal);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700">${v.payment}</span></td><td style="color:var(--teal);font-size:11px">✓ ${v.status}</td><td style="font-size:10px;color:var(--muted)">${new Date(v.date).toLocaleDateString('pt-PT')}</td></tr>`).join('')
+    :'<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">Nenhuma venda ainda.</td></tr>';
+}
+
+function renderBooksAdmin(){
+  const books=getBooks();
+  document.getElementById('books-count').textContent=books.length;
+  document.getElementById('books-admin-tbody').innerHTML=books.map(b=>`<tr>
+    <td style="font-weight:700">${b.emoji} ${b.title}</td><td>${b.author}</td>
+    <td style="color:var(--teal);font-weight:700">$${b.price} / Mt ${b.price*RATE}</td>
+    <td><span style="background:var(--teal-dim);color:var(--teal);padding:2px 7px;border-radius:4px;font-size:10px">${b.cat}</span></td>
+    <td><button onclick="deleteBook(${b.id})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:12px;font-weight:600">Remover</button></td></tr>`).join('');
+}
+
+function renderClients(){
+  const sales=getSales();const map={};
+  sales.forEach(s=>{if(!map[s.email])map[s.email]={name:s.customer,email:s.email,spend:0};map[s.email].spend+=s.price;});
+  const clients=Object.values(map);
+  document.getElementById('cli-count').textContent=clients.length;
+  document.getElementById('clients-list').innerHTML=clients.length
+    ?clients.map(c=>`<div class="client-row"><div class="cl-av">${(c.name||'?')[0]}</div><div class="cl-info"><div class="cl-name">${c.name||'—'}</div><div class="cl-email">${c.email}</div></div><div class="cl-spend">Mt ${(c.spend*RATE).toFixed(0)}</div></div>`).join('')
+    :'<div style="color:var(--muted);text-align:center;padding:20px">Nenhum cliente ainda.</div>';
+}
+
+function renderPayments(){
+  const sales=getSales();
+  document.getElementById('pay-tbody').innerHTML=sales.length
+    ?sales.map(s=>`<tr><td style="font-size:10px;font-family:monospace;color:var(--muted)">${s.id}</td><td>${s.book}</td><td><span style="background:var(--teal-dim);color:var(--teal);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700">${s.payment}</span></td><td style="color:var(--teal);font-weight:700">Mt ${(s.price*RATE).toFixed(0)}</td><td style="color:var(--muted)">$${s.price}</td><td style="font-size:10px;color:var(--muted)">${new Date(s.date).toLocaleDateString('pt-PT')}</td></tr>`).join('')
+    :'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Nenhum pagamento ainda.</td></tr>';
+}
+
+function renderNotifs(){
+  const notifs=getNotifs();
+  document.getElementById('notif-list').innerHTML=notifs.length
+    ?notifs.map((n,i)=>`<div class="notif-item ${n.read?'':'unread'}">
+        <div class="ni-icon">🎉</div>
+        <div class="ni-info"><div class="ni-title">${n.title}</div><div class="ni-sub">${n.msg}</div><div class="ni-time">${ago(n.time)}</div>
+        ${!n.read?`<div class="ni-actions"><button class="ni-btn" onclick="markRead(${i})">✓ Lida</button><button class="ni-btn" onclick="shareNotif(${i})">📤 Partilhar</button></div>`:''}
+        </div></div>`).join('')
+    :'<div style="color:var(--muted);text-align:center;padding:40px">Nenhuma notificação.</div>';
+}
+
+function markRead(i){const n=getNotifs();n[i].read=true;saveNotifs(n);renderNotifs();refreshAll();}
+function markAllRead(){saveNotifs(getNotifs().map(n=>({...n,read:true})));renderNotifs();refreshAll();}
+
+function renderReports(){
+  refreshAll();
+  const sales=getSales();const total=sales.length||1;
+  const pmap={};sales.forEach(s=>{pmap[s.payment]=(pmap[s.payment]||0)+1;});
+  document.getElementById('pay-breakdown').innerHTML=Object.entries(pmap).sort((a,b)=>b[1]-a[1]).map(([m,c])=>{
+    const pct=Math.round(c/total*100);
+    return`<div class="prog-wrap"><div class="prog-label"><span style="font-weight:600">${m}</span><span style="color:var(--teal)">${c} vendas (${pct}%)</span></div><div class="prog-bar"><div class="prog-fill" style="background:var(--teal);width:${pct}%"></div></div></div>`;
+  }).join('')||'<div style="color:var(--muted)">Sem dados.</div>';
+  const bmap={};sales.forEach(s=>{bmap[s.book]=(bmap[s.book]||0)+1;});
+  document.getElementById('book-breakdown').innerHTML=Object.entries(bmap).sort((a,b)=>b[1]-a[1]).map(([t,c])=>{
+    const pct=Math.round(c/total*100);
+    return`<div class="prog-wrap"><div class="prog-label"><span style="font-weight:600">${t}</span><span style="color:var(--purple)">${c} vendas</span></div><div class="prog-bar"><div class="prog-fill" style="background:var(--purple);width:${pct}%"></div></div></div>`;
+  }).join('')||'<div style="color:var(--muted)">Sem dados.</div>';
+}
+
+// BOOKS CRUD
+function addBook(){
+  const title=document.getElementById('nb-title').value.trim();
+  const author=document.getElementById('nb-author').value.trim();
+  const price=parseFloat(document.getElementById('nb-price').value)||4;
+  const cat=document.getElementById('nb-cat').value;
+  const desc=document.getElementById('nb-desc').value.trim();
+  if(!title||!author){toast('⚠️ Título e autor obrigatórios!');return;}
+  const books=getBooks();
+  const colors=['linear-gradient(135deg,#1a3a2a,#0d5c3a)','linear-gradient(135deg,#3a1a1a,#8c2d2d)','linear-gradient(135deg,#1a1a3a,#2d2d8c)','linear-gradient(135deg,#1a3a3a,#2d8c7a)'];
+  const emojis=['📚','💡','🌍','💰','🧠','📣','💻','📊','🔥','⭐'];
+  books.push({id:Date.now(),title,author,cat,price,desc:desc||'Um ebook incrível.',preview:desc||'Pré-visualização em breve.',emoji:emojis[books.length%emojis.length],color:colors[books.length%colors.length]});
+  saveBooks(books);renderBooksAdmin();refreshAll();toast('✅ Ebook adicionado!');
+}
+function deleteBook(id){const books=getBooks().filter(b=>b.id!==id);saveBooks(books);renderBooksAdmin();refreshAll();toast('🗑️ Removido.');}
+
+// ===== AI AGENTS =====
+
+async function callClaude(system, prompt, outputId, statusId, dotId, statusLabel){
+  const outEl=document.getElementById(outputId);
+  const statEl=statusId?document.getElementById(statusId):null;
+  const dotEl=dotId?document.getElementById(dotId):null;
+  if(outEl){outEl.textContent='⏳ Agente IA a trabalhar...';outEl.classList.add('loading');}
+  if(statEl){statEl.textContent='● A Trabalhar';statEl.className='status-pill sp-working';}
+  if(dotEl){dotEl.className='ag-dot running';}
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    const text=data.content?.[0]?.text||'Sem resposta.';
+    if(outEl){outEl.textContent=text;outEl.classList.remove('loading');}
+    if(statEl){statEl.textContent=statusLabel||'● Concluído';statEl.className='status-pill sp-running';}
+    return text;
+  }catch(e){
+    if(outEl){outEl.textContent='Erro de ligação. Verifica a internet e tenta novamente.';outEl.classList.remove('loading');}
+    if(statEl){statEl.textContent='● Erro';statEl.className='status-pill sp-idle';}
+    return null;
+  }
+}
+
+// MARKETING AGENT - AUTO
+async function runMarketing(type){
+  const books=getBooks();const sales=getSales();
+  const catalog=books.map(b=>`"${b.title}" (${b.cat}) — Mt ${b.price*RATE}`).join('\n');
+  const top=sales.length?sales[0].book:'Vida Real, Soluções Criativas';
+  const focus=type?`Foca apenas em ${type}.`:'Cria conteúdo completo para TODOS os canais.';
+  const sys=`Você é um especialista em marketing digital para a MindaBooks, loja de ebooks em Português para Moçambique e o mundo. Cria conteúdo de marketing altamente eficaz, criativo e com emojis. Analisa os dados e sugere as melhores estratégias. Responde sempre em Português.`;
+  const prompt=`Análise automática do dia ${new Date().toLocaleDateString('pt-PT')}:\n\nCatálogo actual:\n${catalog}\n\nEbook mais vendido: ${top}\nTotal vendas: ${sales.length}\n\n${focus}\n\nCria:\n1. 📸 Post Instagram (com hashtags)\n2. 🎵 Script TikTok (15-30 seg)\n3. 💰 Texto de Anúncio Pago (Meta Ads)\n4. 📲 Mensagem WhatsApp Marketing\n5. 🎯 3 Estratégias para hoje\n\nSeja criativo, use emojis e adapta para o mercado africano/lusófono.`;
+  await callClaude(sys,prompt,'mkt-output','mkt-status','dot-mkt','● A Trabalhar');
+  document.getElementById('mkt-last').textContent='Última execução: '+new Date().toLocaleTimeString('pt-PT');
+}
+
+async function runMarketingType(type){await runMarketing(type);}
+
+async function runCalendar(){
+  const books=getBooks();
+  const sys=`Você é um especialista em marketing de conteúdo para a MindaBooks. Cria calendários editoriais detalhados e estratégicos. Responde em Português.`;
+  const prompt=`Cria um CALENDÁRIO EDITORIAL de conteúdo para os próximos 7 dias da MindaBooks.\n\nEbooks disponíveis: ${books.map(b=>b.title).join(', ')}\n\nPara cada dia inclui:\n- Tema do post\n- Canal (Instagram/TikTok/WhatsApp/Facebook)\n- Hora de publicação\n- Tipo de conteúdo\n- Ebook em destaque\n- Chamada para acção\n\nFormato: um dia por vez, organizado e claro.`;
+  await callClaude(sys,prompt,'mkt-calendar',null,null,null);
+}
+
+// WRITER AGENT
+async function runWriter(){
+  const tema=document.getElementById('w-tema').value.trim();
+  const pages=document.getElementById('w-pages').value||50;
+  const cat=document.getElementById('w-cat').value;
+  const publico=document.getElementById('w-publico').value.trim()||'Adultos portugueses/africanos';
+  const desc=document.getElementById('w-desc').value.trim();
+  const cor=document.getElementById('w-cor').value;
+  const emoji=document.getElementById('w-emoji').value||'📚';
+  if(!tema){toast('⚠️ Insere o tema do ebook!');return;}
+  const btn=document.getElementById('writer-btn');
+  btn.disabled=true;btn.textContent='✍️ A escrever o ebook... pode demorar 1-2 minutos';
+  document.getElementById('writer-status').textContent='● A Escrever';
+  document.getElementById('writer-status').className='status-pill sp-working';
+  document.getElementById('dot-wrt').className='ag-dot running';
+  document.getElementById('writer-output').innerHTML='<div style="color:var(--muted);font-size:13px;padding:20px;text-align:center;border:1px dashed var(--border);border-radius:8px">⏳ O Agente Escritor IA está a produzir o teu ebook completo...<br><small style="color:var(--muted)">Título · Índice · Introdução · Capítulos · Conclusão</small></div>';
+  const sys=`Você é um escritor profissional especializado em ebooks de não-ficção em Português para o mercado africano e lusófono. Produz conteúdo de alta qualidade, prático e envolvente. Responda APENAS em JSON válido, sem markdown, sem texto extra.`;
+  const prompt=`Escreve um ebook COMPLETO com base nestas orientações:\n\nTema: ${tema}\nPáginas aproximadas: ${pages}\nCategoria: ${cat}\nPúblico-alvo: ${publico}\nDescrição/Orientações: ${desc||'Conteúdo prático e motivador'}\n\nResponde APENAS com este JSON (sem markdown, sem backticks):\n{\n"titulo": "Título do Ebook",\n"subtitulo": "Subtítulo envolvente",\n"autor": "MindaBooks Editorial",\n"categoria": "${cat}",\n"paginas": ${pages},\n"descricao": "Descrição de 2-3 frases para a loja",\n"indice": ["Introdução", "Capítulo 1: ...", "Capítulo 2: ...", "Capítulo 3: ...", "Capítulo 4: ...", "Capítulo 5: ...", "Conclusão"],\n"introducao": "Texto completo da introdução (4-5 parágrafos)",\n"capitulos": [\n  {"titulo": "Capítulo 1: ...", "conteudo": "Texto completo do capítulo (3-4 parágrafos com conteúdo real e prático)"},\n  {"titulo": "Capítulo 2: ...", "conteudo": "Texto completo..."},\n  {"titulo": "Capítulo 3: ...", "conteudo": "Texto completo..."},\n  {"titulo": "Capítulo 4: ...", "conteudo": "Texto completo..."},\n  {"titulo": "Capítulo 5: ...", "conteudo": "Texto completo..."}\n],\n"conclusao": "Texto completo da conclusão (2-3 parágrafos)"\n}`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    let text=data.content?.[0]?.text||'{}';
+    text=text.replace(/```json|```/g,'').trim();
+    const ebook=JSON.parse(text);
+    ebook.cor=cor;ebook.emoji=emoji;ebook.price=4;
+    generatedEbook=ebook;
+    renderEbookPreview(ebook);
+    document.getElementById('writer-status').textContent='● Ebook Pronto';
+    document.getElementById('writer-status').className='status-pill sp-running';
+    document.getElementById('dot-wrt').className='ag-dot running';
+  }catch(e){
+    document.getElementById('writer-output').innerHTML='<div style="color:var(--red);padding:14px">Erro ao gerar ebook. Tenta novamente.</div>';
+  }
+  btn.disabled=false;btn.textContent='✍️ Gerar Ebook Completo com IA';
+}
+
+function renderEbookPreview(eb){
+  const indexHtml=eb.indice.map((item,i)=>`<div class="index-item"><span>${i===0?'':'Capítulo '+(i>0&&i<eb.indice.length-1?i:'')} ${item}</span><span>${Math.floor(Math.random()*8)+3}</span></div>`).join('');
+  const chapsHtml=(eb.capitulos||[]).map(c=>`<h2>${c.titulo}</h2><p>${c.conteudo}</p>`).join('');
+  const html=`
+    <div class="ebook-viewer">
+      <div class="eb-cover" style="background:${eb.cor}">
+        <div class="category-tag">${eb.categoria}</div>
+        <div style="font-size:40px;margin-bottom:10px">${eb.emoji}</div>
+        <h1>${eb.titulo}</h1>
+        <div class="subtitle">${eb.subtitulo||''}</div>
+        <div class="author-line">por ${eb.autor}</div>
+        <div class="mb-logo">MindaBooks · ${eb.paginas} páginas</div>
+      </div>
+      <div class="eb-content">
+        <h2>📋 Índice</h2>
+        ${indexHtml}
+        <h2>📖 Introdução</h2>
+        <p>${eb.introducao}</p>
+        ${chapsHtml}
+        <h2>✅ Conclusão</h2>
+        <p>${eb.conclusao}</p>
+        <blockquote>Este ebook foi escrito pelo Agente Escritor IA da MindaBooks. © 2025 MindaBooks — Todos os direitos reservados.</blockquote>
+      </div>
+    </div>`;
+  document.getElementById('writer-output').innerHTML=html;
+  openOv('ov-ebook');
+  document.getElementById('ebook-content').innerHTML=html;
+}
+
+function addEbookToStore(){
+  if(!generatedEbook)return;
+  const books=getBooks();
+  books.push({
+    id:Date.now(),title:generatedEbook.titulo,author:generatedEbook.autor,
+    cat:generatedEbook.categoria,price:generatedEbook.price||4,
+    emoji:generatedEbook.emoji||'📚',color:generatedEbook.cor,
+    desc:generatedEbook.descricao||'Um ebook incrível.',
+    preview:generatedEbook.introducao?generatedEbook.introducao.substring(0,200)+'...':'Pré-visualização em breve.'
+  });
+  saveBooks(books);refreshAll();closeOv('ov-ebook');
+  nav('ebooks',null);toast('✅ Ebook adicionado à loja com sucesso!');
+}
+
+function printEbook(){window.print();}
+
+// SALES AGENT - AUTO
+async function runSalesAgent(type){
+  const sales=getSales();const books=getBooks();
+  const total=sales.reduce((s,v)=>s+v.price,0);
+  const methods={};sales.forEach(s=>{methods[s.payment]=(methods[s.payment]||0)+1;});
+  const bookSales={};sales.forEach(s=>{bookSales[s.book]=(bookSales[s.book]||0)+1;});
+  const focus=type==='preco'?'Foca especificamente em estratégias de preços e promoções.':type==='conversao'?'Foca especificamente em aumentar a taxa de conversão.':'Análise completa de vendas e estratégias.';
+  const sys=`Você é um consultor de vendas especializado em ecommerce de ebooks para o mercado africano e lusófono. Analisa dados reais e cria estratégias accionáveis. Seja directo e específico. Responde em Português.`;
+  const prompt=`DADOS ACTUAIS DA LOJA:\n- Total de vendas: ${sales.length}\n- Receita total: Mt ${(total*RATE).toFixed(0)} ($${total})\n- Ebooks no catálogo: ${books.length}\n- Métodos de pagamento mais usados: ${Object.entries(methods).sort((a,b)=>b[1]-a[1]).map(([m,c])=>m+': '+c).join(', ')||'sem dados'}\n- Ebooks mais vendidos: ${Object.entries(bookSales).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([b,c])=>b+': '+c+' venda(s)').join(', ')||'sem dados'}\n\n${focus}\n\nAnalisa e fornece:\n1. 🎯 3 Acções prioritárias para HOJE\n2. 📈 Estratégias de crescimento para esta semana\n3. 💡 Oportunidades identificadas nos dados\n4. ⚠️ Problemas ou riscos detectados\n5. 🔮 Previsão de receita para os próximos 30 dias\n6. 💰 Recomendação de preços optimizados`;
+  await callClaude(sys,prompt,'sales-ag-output','sales-ag-status','dot-sal','● A Trabalhar');
+  document.getElementById('sales-ag-last').textContent='Actualizado: '+new Date().toLocaleTimeString('pt-PT');
+}
+async function runSalesType(type){await runSalesAgent(type);}
+
+// ANALYSIS AGENT - AUTO
+async function runAnalysis(type){
+  const sales=getSales();const books=getBooks();
+  const total=sales.reduce((s,v)=>s+v.price,0);
+  const focus=type==='previsao'?'Foca especificamente em previsões para os próximos 30 dias.':type==='concorrencia'?'Foca na análise do mercado de ebooks em Português.':'Análise completa do negócio.';
+  const sys=`Você é um analista de business intelligence especializado em ecommerce de conteúdo digital para mercados africanos e lusófonos. Fornece insights profundos e recomendações estratégicas. Responde em Português.`;
+  const prompt=`ANÁLISE — ${new Date().toLocaleDateString('pt-PT')}\n\nDados:\n- Vendas: ${sales.length}\n- Receita: Mt ${(total*RATE).toFixed(0)}\n- Ebooks: ${books.length}\n\n${focus}\n\nAnalisa:\n1. 📊 Performance actual\n2. 📈 Tendências identificadas\n3. 🔮 Previsão 30/60/90 dias\n4. ⚡ Quick wins — acções de alto impacto\n5. 🚀 Plano de crescimento`;
+  callClaude(sys,prompt,'anl-output','anl-status','dot-anl','● A Analisar');
+  document.getElementById('anl-last').textContent='Última análise: '+new Date().toLocaleTimeString('pt-PT');
+}
+async function runAnalysisType(type){await runAnalysis(type);}
+
+function simulateSale(){
+  // This triggers notification via checkNewSales polling,
+  const books=getBooks();if(!books.length)return;
+  const b=books[Math.floor(Math.random()*books.length)];
+  const sale={id:'MB-'+Date.now().toString().slice(-7),book:b.title,price:b.price,payment:METHODS[Math.floor(Math.random()*METHODS.length)],customer:NAMES[Math.floor(Math.random()*NAMES.length)],email:'cliente@gmail.com',date:new Date().toISOString(),status:'Pago',city:CITIES[Math.floor(Math.random()*CITIES.length)]};
+  const sales=getSales();sales.unshift(sale);saveSales(sales);
+  const notifs=getNotifs();
+  notifs.unshift({id:'N-'+Date.now(),title:'Nova Venda! 🎉',msg:`${sale.book} — Mt ${(sale.price*RATE).toFixed(0)} — ${sale.customer} — ${sale.city} — ${sale.payment}`,time:sale.date,read:false});
+  saveNotifs(notifs);
+  refreshAll();
+  showLiveNotif(sale,'whatsapp');
+  setTimeout(()=>showLiveNotif(sale,'telegram'),500);
+  sendWhatsAppNotif(sale);sendTelegramNotif(sale);
+  toast(`🎉 Venda simulada: ${sale.book}!`);
+  logNotifAgent(`🎉 Nova venda: ${sale.book} · Mt ${(sale.price*RATE).toFixed(0)} · ${sale.customer} · ${sale.payment}`);
+}
+
+function ago(date){const s=Math.floor((Date.now()-new Date(date).getTime())/1000);if(s<60)return'agora mesmo';if(s<3600)return`há ${Math.floor(s/60)} min`;if(s<86400)return`há ${Math.floor(s/3600)}h`;return`há ${Math.floor(s/86400)} dias`;}
+function copyOutput(id){const el=document.getElementById(id);if(!el)return;navigator.clipboard.writeText(el.textContent).then(()=>toast('📋 Copiado!'));}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
+function openOv(id){document.getElementById(id).classList.add('open');}
+function closeOv(id){document.getElementById(id).classList.remove('open');}
+
+function saveSettings(){
+  const cfg={
+    name:document.getElementById('cfg-owner-name')?.value.trim()||'',
+    mpesa:document.getElementById('cfg-mpesa')?.value.trim()||'',
+    emola:document.getElementById('cfg-emola')?.value.trim()||'',
+    paypal:document.getElementById('cfg-paypal')?.value.trim()||'',
+    banco:document.getElementById('cfg-iban')?.value.trim()||'',
+    nib:document.getElementById('cfg-nib')?.value.trim()||'',
+    multicaixa:document.getElementById('cfg-multicaixa')?.value.trim()||'',
+  };
+  localStorage.setItem('mb_owner_cfg',JSON.stringify(cfg));
+  const np=document.getElementById('cfg-newpass')?.value;
+  if(np&&np.length>=4){
+    ADMIN_PASS=np;
+    localStorage.setItem('mb_admin_pass', np);
+    if(document.getElementById('cfg-newpass')) document.getElementById('cfg-newpass').value='';
+    toast('✅ Dados e senha guardados! Nova senha activa.');
+  } else {
+    toast('✅ Dados guardados! A loja já mostra os teus números.');
+  }
+}
+
+function loadOwnerConfig(){
+  try{
+    const cfg=JSON.parse(localStorage.getItem('mb_owner_cfg')||'{}');
+    if(cfg.name)document.getElementById('cfg-owner-name').value=cfg.name;
+    if(cfg.mpesa)document.getElementById('cfg-mpesa').value=cfg.mpesa;
+    if(cfg.emola)document.getElementById('cfg-emola').value=cfg.emola;
+    if(cfg.paypal)document.getElementById('cfg-paypal').value=cfg.paypal;
+    if(cfg.banco)document.getElementById('cfg-iban').value=cfg.banco;
+    if(cfg.nib)document.getElementById('cfg-nib').value=cfg.nib;
+    if(cfg.multicaixa)document.getElementById('cfg-multicaixa').value=cfg.multicaixa;
+  }catch(e){}
+}
+
+function init(){
+  if(!localStorage.getItem(BOOKS_KEY))saveBooks(DEFAULT_BOOKS);
+  if(!getSales().length){
+    const books=getBooks();const sample=[];
+    for(let i=0;i<8;i++){
+      const b=books[i%books.length];const d=new Date(Date.now()-(7-i)*24*3600*1000-Math.random()*3600*1000);
+      sample.push({id:'MB-'+String(1000+i),book:b.title,price:b.price,payment:METHODS[i%METHODS.length],customer:NAMES[i%NAMES.length],email:`cliente${i}@gmail.com`,date:d.toISOString(),status:'Pago',city:CITIES[i%CITIES.length]});
+    }
+    saveSales(sample);
+  }
+  if(!getNotifs().length){
+    const sales=getSales();
+    saveNotifs(sales.slice(0,4).map((s,i)=>({id:'N-'+i,title:'Nova Venda! 🎉',msg:`${s.book} — Mt ${(s.price*RATE).toFixed(0)} — ${s.customer} — ${s.city||'Maputo'} — ${s.payment}`,time:s.date,read:i>1})));
+  }
+  refreshAll();
+  setTimeout(()=>runMarketing(),1500);
+  setTimeout(()=>runCalendar(),3500);
+  setTimeout(()=>runSalesAgent(),5500);
+  setTimeout(()=>runAnalysis(),7500);
+  setInterval(refreshAll,60000);
+  loadOwnerConfig();
+}
+
+
+// ===== LIVE NOTIFICATION SYSTEM =====
+let lastSaleId = null;
+let notifSound = null;
+
+function initNotifSystem() {
+  // Track last sale
+  const sales = getSales();
+  if (sales.length) lastSaleId = sales[0].id;
+  // Poll for new sales every 5 seconds
+  setInterval(checkNewSales, 5000);
+  // Also check on storage events (cross-tab)
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'mb_sales') checkNewSales();
+  });
+}
+
+function checkNewSales() {
+  const sales = getSales();
+  if (!sales.length) return;
+  const newest = sales[0];
+  if (newest.id !== lastSaleId) {
+    lastSaleId = newest.id;
+    triggerSaleNotification(newest);
+    refreshAll();
+  }
+}
+
+function triggerSaleNotification(sale) {
+  showSalePopup(sale);
+  pulseBell();
+  // Update notification badge
+  const notifs = getNotifs();
+  notifs.unshift({
+    id: 'N-' + Date.now(),
+    title: 'Nova Venda! 🎉',
+    msg: `${sale.book} — Mt ${(sale.price * RATE).toFixed(0)} — ${sale.customer || '—'} — ${sale.city || 'Online'} — ${sale.payment}`,
+    time: sale.date,
+    read: false
+  });
+  saveNotifs(notifs);
+  updateBadges();
+}
+
+function showSalePopup(sale) {
+  const container = document.getElementById('sale-notif-container');
+  if (!container) return;
+
+  const popup = document.createElement('div');
+  popup.className = 'sale-popup';
+  popup.innerHTML = `
+    <div class="sp-head">
+      <span class="sp-badge">🎉 NOVA VENDA</span>
+      <div class="sp-live"><span></span><span></span><span></span><span></span><span></span></div>
+      <span class="sp-time">${new Date().toLocaleTimeString('pt-PT', {hour:'2-digit',minute:'2-digit'})}</span>
+      <button class="sp-close" onclick="dismissPopup(this)">✕</button>
+    </div>
+    <div class="sp-body">
+      <div class="sp-icon">🎊</div>
+      <div class="sp-info">
+        <div class="sp-title">${sale.book}</div>
+        <div class="sp-sub">
+          👤 ${sale.customer || 'Cliente'}<br>
+          📍 ${sale.city || 'Online'} &nbsp;·&nbsp; ${sale.payment}
+        </div>
+      </div>
+      <div class="sp-val">Mt ${(sale.price * RATE).toFixed(0)}</div>
+    </div>
+    <div class="sp-footer">
+      <button class="sp-action" onclick="nav('vendas',null);dismissPopup(this.closest('.sale-popup'))">📋 Ver Venda</button>
+      <button class="sp-action" onclick="nav('notificacoes',null);dismissPopup(this.closest('.sale-popup'))">🔔 Notificações</button>
+    </div>`;
+
+  container.insertBefore(popup, container.firstChild);
+
+  // Auto remove after 8 seconds
+  setTimeout(() => dismissPopup(popup), 8000);
+
+  // Keep max 3 popups
+  while (container.children.length > 3) {
+    dismissPopup(container.lastChild);
+  }
+}
+
+function dismissPopup(el) {
+  if (!el) return;
+  el.classList.add('removing');
+  setTimeout(() => el.remove(), 300);
+}
+
+function pulseBell() {
+  const bell = document.querySelector('.notif-btn');
+  if (bell) {
+    bell.classList.add('notif-bell-pulse');
+    setTimeout(() => bell.classList.remove('notif-bell-pulse'), 2000);
+  }
+}
+
+// Test notification button in notif agent panel
+function testLiveNotif() {
+  const books = getBooks();
+  const b = books[Math.floor(Math.random() * books.length)];
+  const fakeSale = {
+    id: 'TEST-' + Date.now(),
+    book: b.title,
+    price: b.price,
+    payment: METHODS[Math.floor(Math.random() * METHODS.length)],
+    customer: NAMES[Math.floor(Math.random() * NAMES.length)],
+    city: CITIES[Math.floor(Math.random() * CITIES.length)],
+    date: new Date().toISOString()
+  };
+  showSalePopup(fakeSale);
+  toast('🔔 Notificação de teste mostrada!');
+}
+
+
+
+window.addEventListener('DOMContentLoaded', function(){
+  // Always clear session and ask for password
+  sessionStorage.removeItem('mb_admin_auth');
+  var inp = document.getElementById('admin-pass-input');
+  if(inp) setTimeout(function(){ inp.focus(); }, 200);
+});
+
+document.addEventListener('DOMContentLoaded',function(){
+  var oe=document.getElementById('ov-ebook');
+  if(oe) oe.addEventListener('click',function(e){if(e.target===this)closeOv('ov-ebook');});
+  var om=document.getElementById('mo-newbook');
+  if(om) om.addEventListener('click',function(e){if(e.target===this)closeModal('mo-newbook');});
+});
+</script>
+
+<div id="sale-notif-container"></div>
+</body>
+                                                                    </html>
