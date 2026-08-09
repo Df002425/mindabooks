@@ -606,15 +606,13 @@ function checkAdminPass() {
       <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5">Estes dados aparecem automaticamente para os clientes quando escolhem o método de pagamento na loja.</p>
       <div style="display:grid;gap:10px">
         <div class="f-group"><label>👤 Teu Nome Completo</label><input class="f-input" id="cfg-owner-name" placeholder="Ex: Domingos Cuna"></div>
-        <div class="f-group"><label>📱 Número M-Pesa</label><input class="f-input" id="cfg-mpesa" placeholder="+258 84 XXX XXXX" type="tel"></div>
-        <div class="f-group"><label>💚 Número E-Mola</label><input class="f-input" id="cfg-emola" placeholder="+258 86 XXX XXXX" type="tel"></div>
         <div class="f-group"><label>📧 Email PayPal</label><input class="f-input" id="cfg-paypal" placeholder="seupaypal@email.com" type="email"></div>
         <div class="f-group"><label>🏦 IBAN (Banco Internacional)</label><input class="f-input" id="cfg-iban" placeholder="MZ59 0001 0000 0000 0000 0000 X"></div>
         <div class="f-group"><label>🔢 NIB (Banco Nacional)</label><input class="f-input" id="cfg-nib" placeholder="NIB: 0001.0000.00000000000.X"></div>
         <div class="f-group"><label>🏧 Referência Multicaixa</label><input class="f-input" id="cfg-multicaixa" placeholder="MCX-MB-2025"></div>
       </div>
       <div style="margin-top:14px;background:var(--teal-dim);border:1px solid rgba(0,217,160,.2);border-radius:8px;padding:12px;font-size:12px;color:var(--text2)">
-        ✅ <strong style="color:var(--teal)">Preenche pelo menos o M-Pesa e E-Mola</strong> para os clientes de Moçambique. Os restantes são opcionais conforme os métodos que aceitas.
+        ✅ <strong style="color:var(--teal)">Preenche o PayPal e/ou dados bancários</strong> para receber pagamentos internacionais. Os métodos activos são geridos via Hotmart.
       </div>
     </div>
   </div>
@@ -685,7 +683,7 @@ const DEFAULT_BOOKS=[
 ];
 const CITIES=['Maputo','Beira','Nampula','Tete','Quelimane','Luanda','Lobito','São Paulo','Lisboa'];
 const NAMES=['Pedro L.','Maria S.','João M.','Ana F.','Carlos R.','Fátima N.','Lucas O.'];
-const METHODS=['M-Pesa','PayPal','E-Mola','Banco','Cartão','Multicaixa'];
+const METHODS=['PayPal','Cartão','Pix','Boleto'];
 
 function getBooks(){try{const s=localStorage.getItem(BOOKS_KEY);if(s)return JSON.parse(s);}catch(e){}return DEFAULT_BOOKS;}
 function saveBooks(b){localStorage.setItem(BOOKS_KEY,JSON.stringify(b));}
@@ -1042,8 +1040,6 @@ function closeOv(id){document.getElementById(id).classList.remove('open');}
 function saveSettings(){
   const cfg={
     name:document.getElementById('cfg-owner-name')?.value.trim()||'',
-    mpesa:document.getElementById('cfg-mpesa')?.value.trim()||'',
-    emola:document.getElementById('cfg-emola')?.value.trim()||'',
     paypal:document.getElementById('cfg-paypal')?.value.trim()||'',
     banco:document.getElementById('cfg-iban')?.value.trim()||'',
     nib:document.getElementById('cfg-nib')?.value.trim()||'',
@@ -1065,8 +1061,6 @@ function loadOwnerConfig(){
   try{
     const cfg=JSON.parse(localStorage.getItem('mb_owner_cfg')||'{}');
     if(cfg.name)document.getElementById('cfg-owner-name').value=cfg.name;
-    if(cfg.mpesa)document.getElementById('cfg-mpesa').value=cfg.mpesa;
-    if(cfg.emola)document.getElementById('cfg-emola').value=cfg.emola;
     if(cfg.paypal)document.getElementById('cfg-paypal').value=cfg.paypal;
     if(cfg.banco)document.getElementById('cfg-iban').value=cfg.banco;
     if(cfg.nib)document.getElementById('cfg-nib').value=cfg.nib;
@@ -1231,4 +1225,4 @@ document.addEventListener('DOMContentLoaded',function(){
 
 <div id="sale-notif-container"></div>
 </body>
-        </html>
+</html>
