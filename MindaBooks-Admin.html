@@ -235,48 +235,177 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   <div class="login-box">
     <div class="login-logo">Minda<span>Books</span></div>
     <div class="login-sub">Painel Administrativo · Acesso Restrito</div>
-    <div class="login-label">Senha de Acesso</div>
-    <input class="login-inp" id="admin-pass-input" type="password" placeholder="••••••••"
-      onkeypress="if(event.key==='Enter')checkAdminPass()"
-      autocomplete="current-password">
-    <button class="login-btn" onclick="checkAdminPass()">🔐 Entrar no Painel</button>
-    <div class="login-err" id="login-err">❌ Senha incorrecta. Tenta novamente.</div>
-    <div class="login-attempts" id="login-attempts"></div>
+
+    <!-- ENTRAR -->
+    <div id="v-login">
+      <div class="login-label">PIN de Acesso</div>
+      <input class="login-inp" id="pin-in" type="password" placeholder="••••••••" autocomplete="current-password"
+        onkeypress="if(event.key==='Enter')mbLogin()">
+      <button class="login-btn" onclick="mbLogin()">🔐 Entrar no Painel</button>
+      <div style="margin-top:6px"><a href="#" style="color:#607890;font-size:12px" onclick="mbShow('v-recover');return false">Esqueci o PIN</a></div>
+    </div>
+
+    <!-- PRIMEIRO ACESSO -->
+    <div id="v-setup" style="display:none">
+      <div class="login-label">Cria o teu PIN (mín. 8 caracteres)</div>
+      <input class="login-inp" id="setup-1" type="password" placeholder="Novo PIN" autocomplete="new-password">
+      <input class="login-inp" id="setup-2" type="password" placeholder="Repete o PIN" autocomplete="new-password"
+        onkeypress="if(event.key==='Enter')mbSetup()">
+      <button class="login-btn" onclick="mbSetup()">✅ Guardar PIN</button>
+    </div>
+
+    <!-- RECUPERAR -->
+    <div id="v-recover" style="display:none">
+      <div class="login-label">Código de recuperação</div>
+      <input class="login-inp" id="rec-code" type="text" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" style="text-transform:uppercase">
+      <div class="login-label">Novo PIN (mín. 8 caracteres)</div>
+      <input class="login-inp" id="rec-pin" type="password" placeholder="Novo PIN" autocomplete="new-password"
+        onkeypress="if(event.key==='Enter')mbRecover()">
+      <button class="login-btn" onclick="mbRecover()">🔄 Redefinir PIN</button>
+      <div style="margin-top:6px"><a href="#" style="color:#607890;font-size:12px" onclick="mbShow('v-login');return false">← Voltar</a></div>
+    </div>
+
+    <!-- MOSTRAR CÓDIGO DE RECUPERAÇÃO (uma única vez) -->
+    <div id="v-code" style="display:none">
+      <div class="login-label">O teu código de recuperação</div>
+      <div id="code-box" style="background:#112240;border:1.5px dashed #00d9a0;border-radius:10px;padding:14px;font-size:17px;font-weight:800;letter-spacing:2px;color:#00d9a0;margin-bottom:10px;user-select:all"></div>
+      <div style="font-size:12px;color:#b0c4d8;line-height:1.5;margin-bottom:14px">
+        ⚠️ Guarda este código num sítio seguro (gestor de senhas ou papel). <strong>Não volta a ser mostrado.</strong>
+        É a única forma de recuperar o PIN.
+      </div>
+      <button class="login-btn" onclick="mbEnter()">Guardei o código · Entrar</button>
+    </div>
+
+    <div class="login-err" id="login-err"></div>
   </div>
 </div>
+
 <script>
-function checkAdminPass() {
-  var inp = document.getElementById('admin-pass-input');
-  var err = document.getElementById('login-err');
-  var att = document.getElementById('login-attempts');
-  var val = inp ? inp.value : '';
-  var STORED_PASS = localStorage.getItem('mb_admin_pass') || 'minda2025';
+(function(){
+  var K={salt:'mb_auth_salt',hash:'mb_auth_hash',rsalt:'mb_auth_rsalt',rhash:'mb_auth_rhash',fails:'mb_auth_fails',lock:'mb_auth_lock'};
+  var ITER=210000, MAXFAILS=5, IDLE_MS=15*60*1000;
+  var enc=new TextEncoder(), idleT=null, idleOn=false;
 
-  if (!val) { if(inp) inp.focus(); return; }
+  function $(id){return document.getElementById(id);}
+  function b64(buf){return btoa(String.fromCharCode.apply(null,new Uint8Array(buf)));}
+  function unb64(s){return Uint8Array.from(atob(s),function(c){return c.charCodeAt(0);});}
+  function randSalt(){return b64(crypto.getRandomValues(new Uint8Array(16)));}
+  function norm(s){return String(s).toUpperCase().replace(/[^A-Z0-9]/g,'');}
+  function safeEq(a,b){if(a.length!==b.length)return false;var d=0;for(var i=0;i<a.length;i++)d|=a.charCodeAt(i)^b.charCodeAt(i);return d===0;}
 
-  if (val === STORED_PASS) {
-    var screen = document.getElementById('admin-login-screen');
-    if(screen) screen.style.display = 'none';
-    inp.value = '';
-    if(err) err.style.display = 'none';
-    
-    if(typeof init === 'function') init();
-    if(typeof initNotifSystem === 'function') setTimeout(initNotifSystem, 1000);
-  } else {
-    window._loginAttempts = (window._loginAttempts || 0) + 1;
-    if(inp) inp.value = '';
-    if(inp) inp.focus();
-    if(err) { err.style.display = 'block'; err.textContent = '❌ Senha incorrecta. Tenta novamente.'; }
-    if(window._loginAttempts >= 5) {
-      if(err) err.textContent = '🚫 Demasiadas tentativas. Aguarda 1 minuto.';
-      if(inp) inp.disabled = true;
-      setTimeout(function(){ window._loginAttempts=0; if(inp) inp.disabled=false; if(err) err.style.display='none'; }, 60000);
-    } else {
-      var left = 5 - window._loginAttempts;
-      if(att) att.textContent = left + ' tentativa' + (left!==1?'s':'') + ' restante' + (left!==1?'s':'');
-    }
+  async function derive(secret,saltB64){
+    var key=await crypto.subtle.importKey('raw',enc.encode(secret),'PBKDF2',false,['deriveBits']);
+    var bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:unb64(saltB64),iterations:ITER,hash:'SHA-256'},key,256);
+    return b64(bits);
   }
-}
+  function genRecovery(){
+    var abc='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', r=crypto.getRandomValues(new Uint8Array(16)), s='';
+    r.forEach(function(v,i){s+=abc[v%abc.length];if(i%4===3&&i<15)s+='-';});
+    return s;
+  }
+
+  function msg(t,ok){var e=$('login-err');e.style.display=t?'block':'none';e.textContent=t||'';e.style.color=ok?'#00d9a0':'#ff4466';}
+  function show(v){['v-login','v-setup','v-recover','v-code'].forEach(function(x){$(x).style.display=(x===v?'block':'none');});msg('');}
+  function configured(){return !!(localStorage.getItem(K.hash)&&localStorage.getItem(K.salt));}
+
+  // ---- bloqueio persistente (sobrevive a refresh) ----
+  function lockLeft(){return Math.max(0,(+localStorage.getItem(K.lock)||0)-Date.now());}
+  function isLocked(){var l=lockLeft();if(l>0){msg('🚫 Bloqueado. Tenta daqui a '+Math.ceil(l/1000)+'s.');return true;}return false;}
+  function addFail(){
+    var n=(+localStorage.getItem(K.fails)||0)+1;
+    localStorage.setItem(K.fails,n);
+    if(n>=MAXFAILS){localStorage.setItem(K.lock,Date.now()+Math.min(30000*Math.pow(2,n-MAXFAILS),3600000));}
+    return n;
+  }
+  function clearFails(){localStorage.removeItem(K.fails);localStorage.removeItem(K.lock);}
+
+  // ---- sessão com expiração por inactividade ----
+  function startIdle(){
+    function reset(){clearTimeout(idleT);idleT=setTimeout(function(){window.mbLogout();},IDLE_MS);sessionStorage.setItem('mb_auth_ts',Date.now());}
+    if(!idleOn){idleOn=true;['click','keydown','touchstart'].forEach(function(e){document.addEventListener(e,reset,{passive:true});});}
+    reset();
+  }
+  window.mbEnter=function(){
+    $('admin-login-screen').style.display='none';
+    sessionStorage.setItem('mb_auth_ts',Date.now());
+    if(typeof init==='function')init();
+    if(typeof initNotifSystem==='function')setTimeout(initNotifSystem,1000);
+    startIdle();
+  };
+  window.mbLogout=function(){sessionStorage.removeItem('mb_auth_ts');location.reload();};
+  window.mbShow=show;
+
+  // ---- ENTRAR ----
+  window.mbLogin=async function(){
+    if(isLocked())return;
+    var pin=$('pin-in').value; if(!pin)return;
+    var h=await derive(pin,localStorage.getItem(K.salt));
+    $('pin-in').value='';
+    if(safeEq(h,localStorage.getItem(K.hash))){clearFails();msg('');window.mbEnter();}
+    else{var n=addFail();if(!isLocked())msg('❌ PIN incorrecto. '+Math.max(0,MAXFAILS-n)+' tentativa(s) antes do bloqueio.');}
+  };
+  window.checkAdminPass=window.mbLogin; // compatibilidade
+
+  // ---- PRIMEIRO ACESSO ----
+  window.mbSetup=async function(){
+    var p1=$('setup-1').value,p2=$('setup-2').value;
+    if(p1.length<8)return msg('O PIN deve ter pelo menos 8 caracteres.');
+    if(p1!==p2)return msg('Os PINs não coincidem.');
+    await savePin(p1);
+    await newRecovery();
+    localStorage.removeItem('mb_admin_pass'); // remove a senha antiga em texto
+    clearFails();
+    $('setup-1').value='';$('setup-2').value='';
+    show('v-code');
+  };
+
+  async function savePin(pin){
+    var s=randSalt();
+    localStorage.setItem(K.salt,s);
+    localStorage.setItem(K.hash,await derive(pin,s));
+  }
+  async function newRecovery(){
+    var code=genRecovery(),s=randSalt();
+    localStorage.setItem(K.rsalt,s);
+    localStorage.setItem(K.rhash,await derive(norm(code),s));
+    $('code-box').textContent=code;
+  }
+
+  // ---- ESQUECI O PIN ----
+  window.mbRecover=async function(){
+    if(isLocked())return;
+    var code=norm($('rec-code').value),pin=$('rec-pin').value;
+    if(!code)return msg('Insere o código de recuperação.');
+    if(pin.length<8)return msg('O novo PIN deve ter pelo menos 8 caracteres.');
+    var rs=localStorage.getItem(K.rsalt),rh=localStorage.getItem(K.rhash);
+    if(!rs||!rh)return msg('Não há código de recuperação guardado neste navegador.');
+    var h=await derive(code,rs);
+    if(safeEq(h,rh)){
+      await savePin(pin);
+      await newRecovery(); // código antigo deixa de servir
+      clearFails();
+      $('rec-code').value='';$('rec-pin').value='';
+      show('v-code');
+    }else{
+      var n=addFail();$('rec-code').value='';
+      if(!isLocked())msg('❌ Código inválido. '+Math.max(0,MAXFAILS-n)+' tentativa(s) antes do bloqueio.');
+    }
+  };
+
+  // ---- usar em "Guardar Todos os Dados" (Configurações → Nova Senha Admin) ----
+  window.mbChangePin=async function(newPin){
+    if(!newPin||newPin.length<8){return false;}
+    await savePin(newPin);
+    return true;
+  };
+
+  // ---- arranque ----
+  window.addEventListener('load',function(){
+    show(configured()?'v-login':'v-setup');
+    var ts=+sessionStorage.getItem('mb_auth_ts')||0;
+    if(configured()&&ts&&Date.now()-ts<IDLE_MS)window.mbEnter();
+  });
+})();
 </script>
 
 
@@ -314,7 +443,7 @@ function checkAdminPass() {
   <div class="sb-group">
     <div class="sb-label">Sistema</div>
     <div class="ni" onclick="nav('configuracoes',this)">⚙️ Configurações</div>
-    <div class="ni" onclick="window.open('/mindabooks/MindaBooks-Loja.html','_self')">🌐 Ver Loja</div>
+    <div class="ni" onclick="goStore()">🌐 Ver Loja</div>
     <div class="ni" style="color:var(--red)" onclick="doLogout()">🚪 Sair</div>
   </div>
   <div class="sb-status"><div class="st-dot"></div> Sistema activo · Agentes a correr</div>
@@ -601,18 +730,11 @@ function checkAdminPass() {
 
 <!-- CONFIGURAÇÕES -->
 <div class="panel" id="panel-configuracoes">
-  <div class="settings-card"><h3>💳 Os Meus Dados de Pagamento</h3>
+  <div class="settings-card"><h3>👤 Perfil</h3>
     <div class="settings-body">
-      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5">Estes dados aparecem automaticamente para os clientes quando escolhem o método de pagamento na loja.</p>
-      <div style="display:grid;gap:10px">
-        <div class="f-group"><label>👤 Teu Nome Completo</label><input class="f-input" id="cfg-owner-name" placeholder="Ex: Domingos Cuna"></div>
-        <div class="f-group"><label>📧 Email PayPal</label><input class="f-input" id="cfg-paypal" placeholder="seupaypal@email.com" type="email"></div>
-        <div class="f-group"><label>🏦 IBAN (Banco Internacional)</label><input class="f-input" id="cfg-iban" placeholder="MZ59 0001 0000 0000 0000 0000 X"></div>
-        <div class="f-group"><label>🔢 NIB (Banco Nacional)</label><input class="f-input" id="cfg-nib" placeholder="NIB: 0001.0000.00000000000.X"></div>
-        <div class="f-group"><label>🏧 Referência Multicaixa</label><input class="f-input" id="cfg-multicaixa" placeholder="MCX-MB-2025"></div>
-      </div>
+      <div class="f-group"><label>Teu Nome Completo</label><input class="f-input" id="cfg-owner-name" placeholder="Ex: Domingos Cuna"></div>
       <div style="margin-top:14px;background:var(--teal-dim);border:1px solid rgba(0,217,160,.2);border-radius:8px;padding:12px;font-size:12px;color:var(--text2)">
-        ✅ <strong style="color:var(--teal)">Preenche o PayPal e/ou dados bancários</strong> para receber pagamentos internacionais. Os métodos activos são geridos via Hotmart.
+        ✅ Os pagamentos são processados pelo <strong style="color:var(--teal)">Hotmart</strong>. Os teus dados bancários ficam no Hotmart, não neste painel.
       </div>
     </div>
   </div>
@@ -627,8 +749,6 @@ function checkAdminPass() {
   <div class="settings-card"><h3>🔔 Notificações Automáticas</h3>
     <div class="settings-body">
       <div style="margin-bottom:10px"><div class="f-group"><label>WhatsApp (número com código país)</label><input class="f-input" id="cfg-wa-notif" placeholder="+258841234567"></div></div>
-      <div style="margin-bottom:10px"><div class="f-group"><label>Telegram Bot Token</label><input class="f-input" id="cfg-tg-token" placeholder="123456789:ABCdefGHI..."></div></div>
-      <div style="margin-bottom:10px"><div class="f-group"><label>Telegram Chat ID</label><input class="f-input" id="cfg-tg-chat" placeholder="-1001234567890"></div></div>
       <div class="setting-row"><div class="setting-info"><strong>Notificar a cada venda</strong><span>WhatsApp + Telegram automático</span></div><button class="toggle on" id="tog-notif" onclick="this.classList.toggle('on')"></button></div>
       <div class="setting-row"><div class="setting-info"><strong>Pop-ups na Loja</strong><span>Mostrar notificações de vendas aos clientes</span></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
     </div>
@@ -643,7 +763,7 @@ function checkAdminPass() {
   <div class="settings-card"><h3>🔐 Segurança</h3>
     <div class="settings-body">
       <div style="margin-bottom:10px"><div class="f-group"><label>Nova Senha Admin</label><input class="f-input" id="cfg-newpass" type="password" placeholder="••••••••"></div></div>
-      <div class="setting-row"><div class="setting-info"><strong>Notificações de Venda</strong><span>Receber alertas de novas vendas</span></div><button class="toggle on" id="tog-notif" onclick="this.classList.toggle('on')"></button></div>
+      <div class="setting-row"><div class="setting-info"><strong>Notificações de Venda</strong><span>Receber alertas de novas vendas</span></div><button class="toggle on" id="tog-notif2" onclick="this.classList.toggle('on')"></button></div>
     </div>
   </div>
   <button class="btn-new" onclick="saveSettings()">💾 Guardar Todos os Dados</button>
@@ -683,7 +803,7 @@ const DEFAULT_BOOKS=[
 ];
 const CITIES=['Maputo','Beira','Nampula','Tete','Quelimane','Luanda','Lobito','São Paulo','Lisboa'];
 const NAMES=['Pedro L.','Maria S.','João M.','Ana F.','Carlos R.','Fátima N.','Lucas O.'];
-const METHODS=['PayPal','Cartão','Pix','Boleto'];
+const METHODS=['M-Pesa','PayPal','E-Mola','Banco','Cartão','Multicaixa'];
 
 function getBooks(){try{const s=localStorage.getItem(BOOKS_KEY);if(s)return JSON.parse(s);}catch(e){}return DEFAULT_BOOKS;}
 function saveBooks(b){localStorage.setItem(BOOKS_KEY,JSON.stringify(b));}
@@ -707,7 +827,7 @@ function nav(sec,el){
   if(sec==='notificacoes')renderNotifs();
   if(sec==='relatorios')renderReports();
 }
-function doLogout(){window.open('/mindabooks/MindaBooks-Loja.html','_self');}
+function doLogout(){ if(window.mbLogout) mbLogout(); }
 
 // STATS
 function refreshAll(){
@@ -858,6 +978,18 @@ function addBook(){
 function deleteBook(id){const books=getBooks().filter(b=>b.id!==id);saveBooks(books);renderBooksAdmin();refreshAll();toast('🗑️ Removido.');}
 
 // ===== AI AGENTS =====
+// URL de um proxy teu (ex.: Cloudflare Worker) que recebe {system,prompt,max_tokens} e responde {text}.
+// A chave da API fica SÓ no proxy, nunca neste ficheiro.
+// storeUrl: endereço da loja. Por defeito abre MindaBooks-Loja.html na mesma pasta.
+// Se quiseres, põe o endereço completo (ex.: 'https://o-teu-site.pages.dev/MindaBooks-Loja.html').
+const MB_CONFIG={aiProxy:'',storeUrl:'MindaBooks-Loja.html'};
+function goStore(){ window.location.href=MB_CONFIG.storeUrl||'MindaBooks-Loja.html'; }
+async function askAI(system,prompt,max){
+  if(!MB_CONFIG.aiProxy)throw new Error('Agentes IA ainda sem proxy configurado (MB_CONFIG.aiProxy).');
+  const r=await fetch(MB_CONFIG.aiProxy,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system,prompt,max_tokens:max||1000})});
+  if(!r.ok)throw new Error('Erro do proxy: '+r.status);
+  const d=await r.json();return d.text||'';
+}
 
 async function callClaude(system, prompt, outputId, statusId, dotId, statusLabel){
   const outEl=document.getElementById(outputId);
@@ -867,17 +999,12 @@ async function callClaude(system, prompt, outputId, statusId, dotId, statusLabel
   if(statEl){statEl.textContent='● A Trabalhar';statEl.className='status-pill sp-working';}
   if(dotEl){dotEl.className='ag-dot running';}
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system,messages:[{role:'user',content:prompt}]})
-    });
-    const data=await res.json();
-    const text=data.content?.[0]?.text||'Sem resposta.';
+    const text=(await askAI(system,prompt,1000))||'Sem resposta.';
     if(outEl){outEl.textContent=text;outEl.classList.remove('loading');}
     if(statEl){statEl.textContent=statusLabel||'● Concluído';statEl.className='status-pill sp-running';}
     return text;
   }catch(e){
-    if(outEl){outEl.textContent='Erro de ligação. Verifica a internet e tenta novamente.';outEl.classList.remove('loading');}
+    if(outEl){outEl.textContent='⚠️ '+((e&&e.message)||'Erro de ligação. Verifica a internet e tenta novamente.');outEl.classList.remove('loading');}
     if(statEl){statEl.textContent='● Erro';statEl.className='status-pill sp-idle';}
     return null;
   }
@@ -923,12 +1050,7 @@ async function runWriter(){
   const sys=`Você é um escritor profissional especializado em ebooks de não-ficção em Português para o mercado africano e lusófono. Produz conteúdo de alta qualidade, prático e envolvente. Responda APENAS em JSON válido, sem markdown, sem texto extra.`;
   const prompt=`Escreve um ebook COMPLETO com base nestas orientações:\n\nTema: ${tema}\nPáginas aproximadas: ${pages}\nCategoria: ${cat}\nPúblico-alvo: ${publico}\nDescrição/Orientações: ${desc||'Conteúdo prático e motivador'}\n\nResponde APENAS com este JSON (sem markdown, sem backticks):\n{\n"titulo": "Título do Ebook",\n"subtitulo": "Subtítulo envolvente",\n"autor": "MindaBooks Editorial",\n"categoria": "${cat}",\n"paginas": ${pages},\n"descricao": "Descrição de 2-3 frases para a loja",\n"indice": ["Introdução", "Capítulo 1: ...", "Capítulo 2: ...", "Capítulo 3: ...", "Capítulo 4: ...", "Capítulo 5: ...", "Conclusão"],\n"introducao": "Texto completo da introdução (4-5 parágrafos)",\n"capitulos": [\n  {"titulo": "Capítulo 1: ...", "conteudo": "Texto completo do capítulo (3-4 parágrafos com conteúdo real e prático)"},\n  {"titulo": "Capítulo 2: ...", "conteudo": "Texto completo..."},\n  {"titulo": "Capítulo 3: ...", "conteudo": "Texto completo..."},\n  {"titulo": "Capítulo 4: ...", "conteudo": "Texto completo..."},\n  {"titulo": "Capítulo 5: ...", "conteudo": "Texto completo..."}\n],\n"conclusao": "Texto completo da conclusão (2-3 parágrafos)"\n}`;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:[{role:'user',content:prompt}]})
-    });
-    const data=await res.json();
-    let text=data.content?.[0]?.text||'{}';
+    let text=(await askAI(sys,prompt,4000))||'{}';
     text=text.replace(/```json|```/g,'').trim();
     const ebook=JSON.parse(text);
     ebook.cor=cor;ebook.emoji=emoji;ebook.price=4;
@@ -938,7 +1060,7 @@ async function runWriter(){
     document.getElementById('writer-status').className='status-pill sp-running';
     document.getElementById('dot-wrt').className='ag-dot running';
   }catch(e){
-    document.getElementById('writer-output').innerHTML='<div style="color:var(--red);padding:14px">Erro ao gerar ebook. Tenta novamente.</div>';
+    document.getElementById('writer-output').innerHTML='<div style="color:var(--red);padding:14px">Erro ao gerar ebook. '+String((e&&e.message)||'Tenta novamente.').replace(/[<>&]/g,'')+'</div>';
   }
   btn.disabled=false;btn.textContent='✍️ Gerar Ebook Completo com IA';
 }
@@ -1037,23 +1159,18 @@ function toast(msg){const el=document.getElementById('toast');el.textContent=msg
 function openOv(id){document.getElementById(id).classList.add('open');}
 function closeOv(id){document.getElementById(id).classList.remove('open');}
 
-function saveSettings(){
-  const cfg={
-    name:document.getElementById('cfg-owner-name')?.value.trim()||'',
-    paypal:document.getElementById('cfg-paypal')?.value.trim()||'',
-    banco:document.getElementById('cfg-iban')?.value.trim()||'',
-    nib:document.getElementById('cfg-nib')?.value.trim()||'',
-    multicaixa:document.getElementById('cfg-multicaixa')?.value.trim()||'',
-  };
+async function saveSettings(){
+  // Sem dados financeiros: o Hotmart trata dos pagamentos. Guardar apaga os que já existiam neste navegador.
+  const cfg={name:document.getElementById('cfg-owner-name')?.value.trim()||''};
   localStorage.setItem('mb_owner_cfg',JSON.stringify(cfg));
   const np=document.getElementById('cfg-newpass')?.value;
-  if(np&&np.length>=4){
-    ADMIN_PASS=np;
-    localStorage.setItem('mb_admin_pass', np);
-    if(document.getElementById('cfg-newpass')) document.getElementById('cfg-newpass').value='';
-    toast('✅ Dados e senha guardados! Nova senha activa.');
+  if(np){
+    const ok=(typeof mbChangePin==='function')?await mbChangePin(np):false;
+    if(!ok){toast('⚠️ O PIN deve ter pelo menos 8 caracteres');return;}
+    document.getElementById('cfg-newpass').value='';
+    toast('✅ Dados e novo PIN guardados!');
   } else {
-    toast('✅ Dados guardados! A loja já mostra os teus números.');
+    toast('✅ Dados guardados!');
   }
 }
 
@@ -1061,10 +1178,6 @@ function loadOwnerConfig(){
   try{
     const cfg=JSON.parse(localStorage.getItem('mb_owner_cfg')||'{}');
     if(cfg.name)document.getElementById('cfg-owner-name').value=cfg.name;
-    if(cfg.paypal)document.getElementById('cfg-paypal').value=cfg.paypal;
-    if(cfg.banco)document.getElementById('cfg-iban').value=cfg.banco;
-    if(cfg.nib)document.getElementById('cfg-nib').value=cfg.nib;
-    if(cfg.multicaixa)document.getElementById('cfg-multicaixa').value=cfg.multicaixa;
   }catch(e){}
 }
 
@@ -1083,10 +1196,8 @@ function init(){
     saveNotifs(sales.slice(0,4).map((s,i)=>({id:'N-'+i,title:'Nova Venda! 🎉',msg:`${s.book} — Mt ${(s.price*RATE).toFixed(0)} — ${s.customer} — ${s.city||'Maputo'} — ${s.payment}`,time:s.date,read:i>1})));
   }
   refreshAll();
-  setTimeout(()=>runMarketing(),1500);
-  setTimeout(()=>runCalendar(),3500);
-  setTimeout(()=>runSalesAgent(),5500);
-  setTimeout(()=>runAnalysis(),7500);
+  // Os agentes IA não correm sozinhos (cada chamada tem custo): usa os botões.
+  ['mkt-output','mkt-calendar','sales-ag-output','anl-output'].forEach(id=>{const e=document.getElementById(id);if(e){e.textContent='Clica em "Regenerar / Actualizar" para gerar.';e.classList.remove('loading');}});
   setInterval(refreshAll,60000);
   loadOwnerConfig();
 }
