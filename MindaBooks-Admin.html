@@ -403,7 +403,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   // ---- arranque ----
   // O PIN é pedido SEMPRE: ao abrir, ao recarregar e sempre que saíres da página/app e voltares.
   function lockNow(){
-    if(!entered) return;
+    if(!entered||window.__mbNavigating) return; // não interferir quando estás a ir para a loja
     entered=false;
     sessionStorage.removeItem('mb_auth_ts');
     $('admin-login-screen').style.display='flex'; // tapa o painel de imediato
@@ -991,7 +991,7 @@ function deleteBook(id){const books=getBooks().filter(b=>b.id!==id);saveBooks(bo
 // storeUrl: endereço da loja. Por defeito abre MindaBooks-Loja.html na mesma pasta.
 // Se quiseres, põe o endereço completo (ex.: 'https://o-teu-site.pages.dev/MindaBooks-Loja.html').
 const MB_CONFIG={aiProxy:'',storeUrl:'MindaBooks-Loja.html'};
-function goStore(){ window.location.href=MB_CONFIG.storeUrl||'MindaBooks-Loja.html'; }
+function goStore(){ window.__mbNavigating=true; setTimeout(function(){window.__mbNavigating=false;},3000); window.location.href=MB_CONFIG.storeUrl||'MindaBooks-Loja.html'; }
 async function askAI(system,prompt,max){
   if(!MB_CONFIG.aiProxy)throw new Error('Agentes IA ainda sem proxy configurado (MB_CONFIG.aiProxy).');
   const r=await fetch(MB_CONFIG.aiProxy,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system,prompt,max_tokens:max||1000})});
