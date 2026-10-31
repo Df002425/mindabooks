@@ -131,6 +131,11 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:30px 20p
 .overlay.open{display:flex}
 .modal{width:100%;max-width:500px;margin:auto;background:var(--card2);border-radius:14px;overflow:hidden;animation:slideUp .3s ease}
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.book-cover.has-img{height:auto;aspect-ratio:827/1170;padding:0;background:#0a1628!important}
+.book-cover.has-img::before,.book-cover.has-img::after{display:none}
+.book-cover.has-img img{width:100%;height:100%;object-fit:cover;display:block}
+.prev-cover.has-img{height:auto;padding:16px;background:#0a1628!important}
+.prev-cover.has-img img{width:auto;max-width:62%;max-height:340px;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.55);position:relative;z-index:1}
 .prev-cover{height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;position:relative;overflow:hidden}
 .prev-body{padding:20px}
 .prev-body h2{font-size:19px;font-weight:800;margin-bottom:4px;letter-spacing:-.5px}
@@ -242,7 +247,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:30px 20p
   <div class="nav-right">
     <span class="region-flag" id="region-flag" title="A tua região" onclick="showRegionInfo()">🌍</span>
     <span class="lang-badge" id="lang-badge">PT</span>
-    <button class="btn-sm" onclick="window.location.href='/mindabooks/MindaBooks-Admin.html'">⚙ Admin</button>
+    <button class="btn-sm" onclick="window.location.href='MindaBooks-Admin.html'">⚙ Admin</button>
 
   </div>
 </nav>
@@ -287,6 +292,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:30px 20p
     <button class="filter-btn" onclick="setFilter('Fé',this)">🕯️ Fé</button>
     <button class="filter-btn" onclick="setFilter('Relacionamentos',this)">❤️ Relacionamentos</button>
     <button class="filter-btn" onclick="setFilter('Vida',this)">🌱 Vida</button>
+    <button class="filter-btn" onclick="setFilter('Infantil',this)">🎒 Infantil</button>
   </div>
   <div class="books-grid" id="books-grid"></div>
 </div>
@@ -302,7 +308,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:30px 20p
       <div class="how-step"><div class="how-num">3</div><div class="how-info"><strong>Recebe no Email Imediatamente</strong><span>O Hotmart envia o PDF automaticamente para o teu email em segundos</span></div></div>
     </div>
     <div style="margin-top:16px;background:var(--teal-dim);border:1px solid rgba(0,217,160,.2);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text2)">
-      🔐 <strong style="color:var(--teal)">Processamento seguro pelo Hotmart</strong> — plataforma líder de ebooks em Português com +30 milhões de compradores e pagamentos em todo o mundo.
+      🔐 <strong style="color:var(--teal)">Processamento seguro pelo Hotmart</strong> — plataforma líder de ebooks em Português com pagamentos em todo o mundo.
     </div>
   </div>
 </div>
@@ -319,7 +325,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:30px 20p
       <div class="pay-card"><div class="pay-icon">⚡</div><strong>Pix</strong><span>Brasil</span><div class="pay-badge" style="background:rgba(0,217,160,.15);color:var(--teal)">INSTANT</div></div>
       <div class="pay-card"><div class="pay-icon">📄</div><strong>Boleto</strong><span>Brasil</span><div class="pay-badge" style="background:rgba(255,170,0,.15);color:var(--yellow)">1-3 DIAS</div></div>
     </div>
-    <div class="inst">🔐 <strong>Pagamento 100% seguro processado pelo Hotmart</strong> — plataforma líder de produtos digitais em Português com +30 milhões de compradores em todo o mundo.</div>
+    <div class="inst">🔐 <strong>Pagamento 100% seguro processado pelo Hotmart</strong> — plataforma líder de produtos digitais em Português com pagamentos em todo o mundo.</div>
   </div>
 </div>
 
@@ -460,61 +466,221 @@ const COVERS = [
 // HOTMART — Brasil, Portugal, EUA, Europa (Pix, Boleto, PayPal, Cartão)
 // Substitui pelos links reais após criar os produtos no Hotmart
 const HOTMART_LINKS = {
-  1: 'https://go.hotmart.com/K106699703G',
-  2: 'https://go.hotmart.com/I106700757X',
-  3: 'https://go.hotmart.com/E106701368D',
-  4: 'https://go.hotmart.com/M106701587T',
-  5: 'https://go.hotmart.com/X106701669E',
-  6: 'https://go.hotmart.com/M106701760G',
-  7: 'https://go.hotmart.com/G106702141H',
-  8: 'https://go.hotmart.com/V106702343N',
+  // Vazio de propósito: os links do Hotmart vêm do books.json (campo "hotmart" de cada ebook).
 };
 
 
 const BOOKS = [
-  {id:1,title:'Mente Imbatível',cat:'Motivação',price:4,emoji:'💪',color:COVERS[0],pages:16,
-   desc:'Desenvolve uma mentalidade de alta performance para superar qualquer obstáculo da vida.',
-   preview:'A mente humana é o instrumento mais poderoso que existe. Cada pensamento que tens molda a tua realidade, as tuas decisões e os teus resultados.',
-   indice:['Introdução — O Poder da Mente','Cap. 1 — Mentalidade de Crescimento','Cap. 2 — Vencer o Medo e a Dúvida','Cap. 3 — A Disciplina dos Vencedores','Cap. 4 — Rotinas de Alta Performance','Cap. 5 — Resiliência: Levantar Após a Queda','Cap. 6 — Visualização e Afirmações','Conclusão — A Tua Mente, o Teu Destino'],
-   excerpt:'Carol Dweck identificou dois tipos de mentalidade: a fixa e a de crescimento. Quem tem mentalidade de crescimento acredita que pode melhorar em qualquer área com esforço. O primeiro passo é identificar as tuas crenças limitantes e substituí-las por afirmações de crescimento...'},
-  {id:2,title:'Vida Real, Soluções Criativas',cat:'Vida',price:4,emoji:'💡',color:COVERS[1],pages:17,
-   desc:'Estratégias práticas e criativas para resolver os desafios do quotidiano com inteligência.',
-   preview:'A vida real raramente segue o plano. Este ebook nasceu de histórias reais de pessoas que encontraram saídas criativas para problemas difíceis.',
-   indice:['Introdução — Quando a Vida Não Segue o Plano','Cap. 1 — Pensamento Lateral na Prática','Cap. 2 — Resolver Conflitos sem Desgaste','Cap. 3 — Gestão de Tempo com Recursos Limitados','Cap. 4 — Criatividade no Dia a Dia','Cap. 5 — Tomar Decisões sob Pressão','Cap. 6 — Transformar Problemas em Oportunidades','Conclusão — A Vida como Campo de Treino'],
-   excerpt:'Edward de Bono criou o pensamento lateral: a arte de resolver problemas por ângulos inesperados. A técnica dos 6 Chapéus permite ver o mesmo problema por 6 perspectivas diferentes — dados, emoções, riscos, oportunidades, criatividade e organização...'},
-  {id:3,title:'Finanças Pessoais Agora',cat:'Finanças',price:4,emoji:'💰',color:COVERS[2],pages:13,
-   desc:'O guia definitivo para gerir o dinheiro, eliminar dívidas e começar a investir.',
-   preview:'Ninguém nos ensinou nas escolas como o dinheiro realmente funciona. Com exemplos em Meticais e outras moedas, vais aprender a controlar o teu dinheiro.',
-   indice:['Introdução — O Que Ninguém Te Ensinou','Cap. 1 — Orçamento Pessoal: O Mapa do Teu Dinheiro','Cap. 2 — Como Eliminar Dívidas de Vez','Cap. 3 — A Regra 50-30-20 Adaptada','Cap. 4 — Criar a Tua Reserva de Emergência','Cap. 5 — Investimentos Para Iniciantes','Cap. 6 — Mentalidade de Abundância','Conclusão — O Teu Plano em 90 Dias'],
-   excerpt:'Um orçamento é simplesmente um plano para o teu dinheiro. Sem ele, o dinheiro desaparece sem explicação. Começa por registar todas as receitas e despesas. Dica: paga-te a ti mesmo primeiro — transfere imediatamente uma quantia para poupança antes de gastar qualquer coisa...'},
-  {id:4,title:'Foco Total',cat:'Produtividade',price:4,emoji:'⚡',color:COVERS[3],pages:13,
-   desc:'Elimina as distrações modernas e alcança resultados extraordinários com menos tempo.',
-   preview:'Vivemos na era da distracção permanente. O telemóvel, as notificações, as redes sociais — e o dia passa sem que tenhamos feito o que realmente importava.',
-   indice:['Introdução — A Crise da Atenção','Cap. 1 — Como o Cérebro Processa o Foco','Cap. 2 — Eliminar as Distrações Digitais','Cap. 3 — O Deep Work na Prática','Cap. 4 — O Método 1-3-5 de Prioridades','Cap. 5 — Blocos de Tempo e Rotinas','Cap. 6 — Recuperação: Descanso como Ferramenta','Conclusão — A Tua Semana Ideal'],
-   excerpt:'O cérebro demora em média 23 minutos para regressar ao nível de concentração após uma interrupção. Se recebes 10 notificações por hora, matematicamente nunca entras em foco real durante o dia. A solução começa pelo Protocolo Digital Limpo...'},
-  {id:5,title:'Negócio do Zero',cat:'Negócios',price:4,emoji:'🚀',color:COVERS[4],pages:14,
-   desc:'O guia completo para criar, lançar e escalar um negócio lucrativo com pouco investimento.',
-   preview:'Moçambique está em plena transformação económica. A classe média cresce e a internet expande-se. Este é o momento certo para empreender.',
-   indice:['Introdução — O Mercado que Está a Acordar','Cap. 1 — Encontrar a Tua Ideia de Negócio','Cap. 2 — Validar Antes de Investir','Cap. 3 — O Modelo de Negócio Simplificado','Cap. 4 — Marketing com Zero Orçamento','Cap. 5 — Vendas: Da Primeira à Recorrente','Cap. 6 — Finanças do Negócio','Cap. 7 — Escalar de Forma Sustentável','Conclusão — O Teu Plano de 90 Dias'],
-   excerpt:'A melhor ideia de negócio não é a mais original — é aquela que resolve um problema real que pessoas à tua volta têm. O método dos 3 círculos: o que sabes fazer bem, o que o mercado precisa, e o que as pessoas pagam. A tua ideia ideal está na intersecção dos 3...'},
-  {id:6,title:'Corpo e Alma Saudáveis',cat:'Saúde',price:4,emoji:'🧠',color:COVERS[5],pages:14,
-   desc:'Guia prático de saúde física e mental adaptado à realidade africana e lusófona.',
-   preview:'Saúde não é ausência de doença — é vitalidade, energia e paz interior. Um plano completo usando recursos disponíveis em qualquer país de língua portuguesa.',
-   indice:['Introdução — A Saúde como Investimento','Cap. 1 — Alimentação Saudável com Produtos Locais','Cap. 2 — Exercício Físico sem Ginásio','Cap. 3 — Sono: O Pilar Esquecido','Cap. 4 — Saúde Mental e Gestão do Stress','Cap. 5 — Hidratação e os seus Segredos','Cap. 6 — Prevenção de Doenças Comuns','Conclusão — O Teu Plano de 30 Dias'],
-   excerpt:'Moçambique tem uma riqueza alimentar extraordinária: mandioca, folhas de mandioca (matapa), amendoim, feijão, peixe fresco e frutas tropicais — todos alimentos de alto valor nutricional. O problema não está nos alimentos locais — está na forma como os preparamos...'},
-  {id:7,title:'Fé que Move',cat:'Fé',price:4,emoji:'🕯️',color:COVERS[6],pages:14,
-   desc:'Princípios espirituais práticos para viver com propósito e encontrar paz interior.',
-   preview:'A fé não é uma muleta para os fracos — é a força que move aqueles que acreditam no invisível antes que ele se torne visível.',
-   indice:['Introdução — Fé: O Que é e o Que Não é','Cap. 1 — A Oração como Transformação','Cap. 2 — Propósito: Por Que Estás Aqui','Cap. 3 — Superar Crises com Fé','Cap. 4 — Perdão: A Liberdade Inesperada','Cap. 5 — Comunidade e Crescimento Espiritual','Cap. 6 — Fé e Prosperidade','Conclusão — Viver com Fé no Dia a Dia'],
-   excerpt:'A oração autêntica não é um monólogo — é um diálogo. A neurociência do silêncio revela que períodos regulares de quietude interior produzem alterações mensuráveis no cérebro: redução do cortisol, aumento da serotonina e maior equilíbrio emocional...'},
-  {id:8,title:'Relacionamentos que Duram',cat:'Relacionamentos',price:4,emoji:'❤️',color:COVERS[7],pages:20,
-   desc:'Como construir relações saudáveis, comunicar com amor e transformar conflitos em conexão.',
-   preview:'Os relacionamentos são a base da felicidade humana. Ninguém nos ensinou como amar de forma saudável ou como comunicar sem ferir.',
-   indice:['Introdução — Ninguém Nasce a Saber Amar','Cap. 1 — As 5 Linguagens do Amor','Cap. 2 — Comunicação sem Conflito','Cap. 3 — Limites Saudáveis nas Relações','Cap. 4 — Reconstruir a Confiança','Cap. 5 — Relacionamentos em Tempos de Crise','Cap. 6 — Amor Próprio como Base','Conclusão — O Relacionamento que Mereces'],
-   excerpt:'Gary Chapman identificou 5 formas pelas quais as pessoas expressam e recebem amor: palavras de afirmação, actos de serviço, presença de qualidade, toque físico e presentes. O problema: a maioria ama os outros na SUA linguagem — não na do outro...'},
+  {
+    "id": 1,
+    "cover": "capa-mente-imbativel.jpg",
+    "title": "Mente Imbatível",
+    "cat": "Motivação",
+    "price": 4,
+    "emoji": "💪",
+    "color": "linear-gradient(135deg,#00b860,#00d9a0)",
+    "pages": 36,
+    "desc": "Mentalidade de alta performance para superar qualquer obstáculo: ideias testadas por psicólogos e neurocientistas, rotinas práticas e um plano de 30 dias.",
+    "preview": "Porque é que duas pessoas, com a mesma educação e os mesmos recursos, acabam em lugares tão diferentes da vida? A resposta não foi sorte nem talento: foi a forma como cada uma treinou a própria mente para reagir ao que a vida lhes atirou. Este livro é o resultado dessa procura.",
+    "indice": [
+      "Introdução — O Poder da Mente",
+      "Cap. 1 — Mentalidade de Crescimento",
+      "Cap. 2 — Vencer o Medo e a Dúvida",
+      "Cap. 3 — A Disciplina dos Vencedores",
+      "Cap. 4 — Rotinas de Alta Performance",
+      "Cap. 5 — Resiliência: Levantar Após a Queda",
+      "Cap. 6 — Visualização e Afirmações Positivas",
+      "Conclusão — A Tua Mente, o Teu Destino"
+    ],
+    "excerpt": "Existe uma diferença entre as pessoas que dizem “não sou bom nisto” e as que dizem “ainda não sou bom nisto”. Parece um detalhe pequeno. Não é. A psicóloga Carol Dweck, de Stanford, passou décadas a estudar essa diferença e deu-lhe um nome: mentalidade fixa contra mentalidade de crescimento..."
+  },
+  {
+    "id": 3,
+    "cover": "capa-financas-pessoais-agora.jpg",
+    "title": "Finanças Pessoais Agora",
+    "cat": "Finanças",
+    "price": 4,
+    "emoji": "💰",
+    "color": "linear-gradient(135deg,#cc2200,#ff5533)",
+    "pages": 36,
+    "desc": "Gere o dinheiro, elimina dívidas, poupa e começa a investir, com situações do dia a dia de Portugal, Brasil, Angola e Moçambique.",
+    "preview": "Ninguém nos ensinou nas escolas como o dinheiro realmente funciona. Crescemos sem entender juros compostos, sem saber a diferença entre activo e passivo, sem estratégias para sair das dívidas ou criar uma reserva de emergência. Este ebook muda isso.",
+    "indice": [
+      "Introdução — O Que Ninguém Te Ensinou Sobre Dinheiro",
+      "Cap. 1 — Orçamento Pessoal: O Mapa do Teu Dinheiro",
+      "Cap. 2 — Como Eliminar Dívidas de Vez",
+      "Cap. 3 — A Regra dos 50-30-20 Adaptada",
+      "Cap. 4 — Criar a Tua Reserva de Emergência",
+      "Cap. 5 — Investimentos Para Iniciantes",
+      "Cap. 6 — Mentalidade de Abundância",
+      "Conclusão — O Teu Plano Financeiro em 90 Dias"
+    ],
+    "excerpt": "O orçamento pessoal é o mapa que te mostra para onde vai o teu dinheiro. Sem ele, és como um barco sem leme — moves-te, mas sem direcção certa. Neste capítulo vais criar o teu primeiro orçamento pessoal, passo a passo, usando a metodologia das 4 categorias essenciais..."
+  },
+  {
+    "id": 4,
+    "cover": "capa-foco-total.jpg",
+    "title": "Foco Total",
+    "cat": "Produtividade",
+    "price": 4,
+    "emoji": "⚡",
+    "color": "linear-gradient(135deg,#7722cc,#aa44ff)",
+    "pages": 36,
+    "desc": "Elimina as distracções modernas e alcança mais com menos tempo: deep work, método 1-3-5, blocos de tempo e descanso como ferramenta.",
+    "preview": "Há uns anos media o meu dia em horas trabalhadas. Hoje meço-o em blocos de foco real — e a diferença nos resultados foi maior do que qualquer aumento de horário. Este livro é sobre essa mudança de métrica, e sobre como aplicá-la mesmo com um telemóvel cheio de notificações.",
+    "indice": [
+      "Introdução — A Crise da Atenção do Século XXI",
+      "Cap. 1 — Como o Cérebro Processa o Foco",
+      "Cap. 2 — Eliminar as Distrações Digitais",
+      "Cap. 3 — O Deep Work na Prática",
+      "Cap. 4 — O Método 1-3-5 de Prioridades",
+      "Cap. 5 — Blocos de Tempo e Rotinas",
+      "Cap. 6 — Recuperação: Descanso como Ferramenta",
+      "Conclusão — A Tua Semana Ideal"
+    ],
+    "excerpt": "O foco profundo é gerido, em grande parte, pelo córtex pré-frontal — uma região recente na evolução do cérebro humano e muito exigente em energia. O multitasking, tal como é geralmente descrito, é praticamente um mito: o cérebro alterna rapidamente entre tarefas, e cada alternância tem um custo cognitivo mensurável..."
+  },
+  {
+    "id": 9,
+    "cover": "capa-habito-de-nao-procrastinar.jpg",
+    "title": "O Hábito de Não Procrastinar",
+    "cat": "Produtividade",
+    "price": 4,
+    "emoji": "⏳",
+    "color": "linear-gradient(135deg,#00888a,#00cccc)",
+    "pages": 32,
+    "desc": "Como começar, continuar e acabar sem esperar pela motivação: porque adiamos, a regra dos cinco minutos, planos “se… então” e um plano de 30 dias.",
+    "preview": "Quase toda a gente adia alguma coisa importante: o email difícil, a consulta, o projecto que sonha começar. Este livro parte de uma ideia simples: adiar não é um defeito de carácter, é um hábito — e os hábitos mudam.",
+    "indice": [
+      "Introdução — Não É Preguiça",
+      "Cap. 1 — Porque Adiamos",
+      "Cap. 2 — As Tarefas que Mais Adiamos",
+      "Cap. 3 — Começar É a Parte Difícil",
+      "Cap. 4 — Perfeccionismo, Culpa e Autocompaixão",
+      "Cap. 5 — Prazos, Compromissos e Recompensas",
+      "Cap. 6 — Do Esforço ao Hábito",
+      "Conclusão — O Hábito de Começar"
+    ],
+    "excerpt": "Quando uma tarefa desperta uma emoção desagradável — tédio, medo de falhar, dúvida sobre por onde começar — o cérebro procura alívio. Adiar dá-o logo: abres o telemóvel, arrumas a secretária, respondes a um email fácil. O alívio é real. O custo chega depois..."
+  },
+  {
+    "id": 10,
+    "cover": "capa-saude-com-o-que-tens.jpg",
+    "title": "Saúde com o Que Tens",
+    "cat": "Saúde",
+    "price": 4,
+    "emoji": "🥗",
+    "color": "linear-gradient(135deg,#cc7700,#ffaa00)",
+    "pages": 32,
+    "desc": "Hábitos simples e acessíveis para cuidar do corpo e da mente: alimentação com produtos locais, exercício sem ginásio, sono, stress e prevenção.",
+    "preview": "Saúde não é ausência de doença — é vitalidade, energia, clareza mental e paz interior. Um plano acessível para cuidar do corpo e da mente com o que já tens: alimentos locais, o teu próprio corpo e hábitos simples e consistentes. Conteúdo informativo; não substitui o aconselhamento de um profissional de saúde.",
+    "indice": [
+      "Introdução — A Saúde como Investimento",
+      "Cap. 1 — Alimentação Saudável com Produtos Locais",
+      "Cap. 2 — Exercício Físico sem Ginásio",
+      "Cap. 3 — Sono: O Pilar Esquecido da Saúde",
+      "Cap. 4 — Saúde Mental e Gestão do Stress",
+      "Cap. 5 — Hidratação e os seus Segredos",
+      "Cap. 6 — Prevenção das Doenças mais Comuns",
+      "Conclusão — A Saúde é Feita de Pequenas Escolhas"
+    ],
+    "excerpt": "Comer bem não significa comer caro. Em todos os países de língua portuguesa há uma riqueza alimentar acessível: feijão, arroz, mandioca, batata-doce, folhas verdes, ovos, peixe fresco e fruta da estação. A chave é a combinação: energia, proteína e folhas verdes ou vegetais..."
+  },
+  {
+    "id": 11,
+    "cover": "capa-viver-bem-sem-mostrar.jpg",
+    "title": "Viver Bem, Sem Mostrar",
+    "cat": "Vida",
+    "price": 4,
+    "emoji": "🌱",
+    "color": "linear-gradient(135deg,#2255dd,#4488ff)",
+    "pages": 36,
+    "desc": "Como ter uma vida plena sem precisar de provar nada a ninguém: consumo consciente, redes sociais, discrição, humildade e relações.",
+    "preview": "Há uma diferença entre ter uma vida boa e ter uma vida que parece boa. A primeira sente-se por dentro; a segunda mede-se pelos olhos dos outros. Este livro é sobre a primeira — e sobre como a aproveitares sem sentires que tens de a provar a ninguém.",
+    "indice": [
+      "Introdução — Mostrar ou Ser?",
+      "Cap. 1 — Porque Sentimos Vontade de Mostrar",
+      "Cap. 2 — As Redes Sociais e a Vida de Vitrine",
+      "Cap. 3 — Dinheiro com Consciência",
+      "Cap. 4 — Discrição e Segurança",
+      "Cap. 5 — Humildade sem Falsa Modéstia",
+      "Cap. 6 — Relações, Família e Comunidade",
+      "Conclusão — A Tua Vida, o Teu Ritmo"
+    ],
+    "excerpt": "Mostrar o que temos é uma das coisas mais humanas que existem. Somos seres sociais e, desde sempre, procurámos sinais de que pertencemos ao grupo e de que valemos alguma coisa para ele. O problema começa quando o valor que sentimos passa a depender do aplauso dos outros..."
+  },
+  {
+    "id": 12,
+    "cover": "capa-aprender-e-uma-aventura.jpg",
+    "title": "Aprender é uma Aventura!",
+    "cat": "Infantil",
+    "price": 4,
+    "emoji": "🎒",
+    "color": "linear-gradient(135deg,#4a9d00,#99dd33)",
+    "pages": 52,
+    "desc": "Caderno de actividades para crianças dos 6 aos 10 anos: letras, sílabas, leitura, escrita, desenho, jogos e respeito, com a Mimi como companheira.",
+    "preview": "Cada página é uma pequena aventura: letras, palavras, histórias, desenhos, jogos e muito respeito, tudo num só livro. A Mimi acompanha a criança em todas as páginas, com três níveis de dificuldade, respostas no fim e um diploma.",
+    "indice": [
+      "Como usar este livro",
+      "1 — As letras",
+      "2 — Sílabas e palavras",
+      "3 — Ler",
+      "4 — Escrever",
+      "5 — Desenhar",
+      "6 — Jogos",
+      "7 — Respeito",
+      "8 — E muito mais",
+      "Para pais e professores"
+    ],
+    "excerpt": "O alfabeto: de A a M. Lê a letra e a palavra em voz alta. Depois desenha a palavra na caixa: Aa abelha, Bb bola, Cc casa, Dd dedo, Ee estrela, Ff flor..."
+  }
 ];
 
+// ===== CATÁLOGO PARTILHADO (books.json, na mesma pasta) =====
+// Se books.json existir e for válido, substitui o catálogo embutido; senão fica o embutido.
+function isValidLink(l) { return /^https:\/\/([\w-]+\.)*hotmart\.com\//i.test(l || ''); }
+async function loadCatalog() {
+  try {
+    const r = await fetch('books.json', { cache: 'no-cache' });
+    if (!r.ok) return;
+    const list = await r.json();
+    const clean = Array.isArray(list) ? list.filter(b => b && b.id != null && b.title && b.cat) : [];
+    if (!clean.length) return;
+    BOOKS.length = 0;
+    Object.keys(HOTMART_LINKS).forEach(k => delete HOTMART_LINKS[k]);
+    clean.forEach((b, i) => {
+      BOOKS.push({ id:b.id, title:String(b.title), cat:String(b.cat), price:Number(b.price)||4, emoji:b.emoji||'📚',
+        color:b.color||COVERS[i % COVERS.length], pages:Number(b.pages)||10, desc:b.desc||'',
+        preview:b.preview||b.desc||'', indice:Array.isArray(b.indice)?b.indice:[], excerpt:b.excerpt||b.preview||'', cover:(typeof b.cover==='string'&&/^[\w\-\/]+\.(jpe?g|png|webp)$/i.test(b.cover))?b.cover:'' });
+      if (isValidLink(b.hotmart)) HOTMART_LINKS[b.id] = b.hotmart;
+    });
+    renderBooks();
+  } catch (e) { /* mantém o catálogo embutido */ }
+}
+
 // ===== RENDER BOOKS =====
+function coverFallback(img, id) {
+  const b = BOOKS.find(x => x.id === id), p = img.parentNode;
+  if (!b) { img.remove(); return; }
+  if (p.id === 'prev-cover') {
+    p.className = 'prev-cover'; p.style.background = b.color;
+    p.innerHTML = '<div style="font-size:44px;margin-bottom:10px">' + b.emoji + '</div><div style="font-size:17px;font-weight:900;padding:0 12px;line-height:1.2">' + b.title + '</div>';
+  } else {
+    p.classList.remove('has-img'); p.style.background = b.color;
+    p.innerHTML = '<div class="book-emoji">' + b.emoji + '</div><div class="book-name">' + b.title + '</div>';
+  }
+}
+function coverBox(b) {
+  if (!b.cover) return `<div class="book-cover" style="background:${b.color}">
+        <div class="cat-ribbon"></div>
+        <div class="cat-tag">${b.cat}</div>
+        <div class="book-emoji">${b.emoji}</div>
+        <div class="book-name">${b.title}</div>
+        <div class="cover-hint">👁 Ver resumo</div>
+      </div>`;
+  return `<div class="book-cover has-img"><img src="${b.cover}" alt="Capa de ${b.title}" loading="lazy" onerror="coverFallback(this,${b.id})"><div class="cover-hint">👁 Ver resumo</div></div>`;
+}
+
 function renderBooks() {
   const filtered = activeFilter === 'Todos' ? BOOKS : BOOKS.filter(b => b.cat === activeFilter);
   const grid = document.getElementById('books-grid');
@@ -523,13 +689,7 @@ function renderBooks() {
     const localPrice = formatPrice(b.price);
     const snippet = b.preview.substring(0, 80) + '…';
     return `<div class="book-card" onclick="openPreview(${b.id})">
-      <div class="book-cover" style="background:${b.color}">
-        <div class="cat-ribbon"></div>
-        <div class="cat-tag">${b.cat}</div>
-        <div class="book-emoji">${b.emoji}</div>
-        <div class="book-name">${b.title}</div>
-        <div class="cover-hint">👁 Ver resumo</div>
-      </div>
+      ${coverBox(b)}
       <div class="book-info">
         <div class="book-cat">${b.cat}</div>
         <div class="book-title">${b.title}</div>
@@ -560,12 +720,19 @@ function openPreview(id) {
 
   // Cover
   const cov = document.getElementById('prev-cover');
-  cov.style.background = b.color;
+  if (b.cover) {
+    cov.className = 'prev-cover has-img';
+    cov.style.background = '';
+    cov.innerHTML = `<img src="${b.cover}" alt="Capa de ${b.title}" onerror="coverFallback(this,${b.id})">`;
+  } else {
+    cov.className = 'prev-cover';
+    cov.style.background = b.color;
   cov.innerHTML = `
     <div style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.07)"></div>
     <div style="font-size:44px;margin-bottom:10px;filter:drop-shadow(0 3px 14px rgba(0,0,0,.5));position:relative;z-index:1">${b.emoji}</div>
     <div style="font-size:17px;font-weight:900;text-shadow:0 1px 8px rgba(0,0,0,.6);padding:0 12px;line-height:1.2;position:relative;z-index:1">${b.title}</div>
     <div style="font-size:10px;margin-top:8px;opacity:.7;letter-spacing:1.5px;position:relative;z-index:1">${b.pages} PÁGINAS · ${b.cat.toUpperCase()}</div>`;
+  }
 
   document.getElementById('prev-title').textContent = b.title;
   document.getElementById('prev-cat').textContent = b.cat;
@@ -610,15 +777,11 @@ function openPreview(id) {
 function buyNow(id, platform) {
   const b = BOOKS.find(x => x.id === id);
   if (!b) return;
-
   const link = HOTMART_LINKS[id];
-  const placeholder = 'SEU-LINK';
-
-  if (link && !link.includes(placeholder)) {
-    window.open(link, '_blank');
+  if (isValidLink(link)) {
+    window.open(link, '_blank', 'noopener,noreferrer');
   } else {
-    const name = 'Hotmart';
-    showPlatformNotice(name);
+    showPlatformNotice('Hotmart');
   }
 }
 
@@ -642,9 +805,7 @@ function openOv(id) { document.getElementById(id).classList.add('open'); }
 function closeOv(id) { document.getElementById(id).classList.remove('open'); }
 window.addEventListener('DOMContentLoaded', function() {
   var op = document.getElementById('ov-preview');
-  var oc = document.getElementById('ov-cart');
   if(op) op.addEventListener('click', function(e){ if(e.target===this) closeOv('ov-preview'); });
-  if(oc) oc.addEventListener('click', function(e){ if(e.target===this) closeOv('ov-cart'); });
 });
 
 // ===== CHAT =====
@@ -669,24 +830,33 @@ function addMsg(role, text) {
   el.scrollTop = el.scrollHeight;
 }
 
+// URL de um proxy teu (ex.: Cloudflare Worker) que recebe {system,prompt,max_tokens} e responde {text}.
+// A chave da API fica SÓ no proxy, nunca neste ficheiro.
+const MB_CONFIG = { chatProxy: '' };
+
 async function sendChat() {
   const inp = document.getElementById('chat-inp');
   const text = inp.value.trim();
   if (!text) return;
   inp.value = '';
   addMsg('user', text);
+  if (!MB_CONFIG.chatProxy) {
+    addMsg('bot', 'O assistente está a ser activado. Entretanto, escolhe um ebook, vê o resumo e clica em "Comprar via Hotmart". A entrega é automática por email após o pagamento.');
+    return;
+  }
   const catalog = BOOKS.map(b => `"${b.title}" (${b.cat}) — ${formatPrice(b.price)}`).join(', ');
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch(MB_CONFIG.chatProxy, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514', max_tokens: 400,
+        max_tokens: 400,
         system: `Você é Minda, assistente de vendas da MindaBooks. Seja simpática e concisa (máx 3 frases). Responda em Português. Região do cliente: ${currentRegion.name}. Moeda: ${currentRegion.currency}. Catálogo: ${catalog}. Pagamentos via Hotmart: ${currentRegion.pay.join(', ')}. Entrega automática por email após pagamento.`,
-        messages: [{ role: 'user', content: text }]
+        prompt: text
       })
     });
+    if (!res.ok) throw new Error(res.status);
     const data = await res.json();
-    addMsg('bot', data.content?.[0]?.text || 'Tenta novamente!');
+    addMsg('bot', data.text || 'Tenta novamente!');
   } catch(e) { addMsg('bot', 'Erro de ligação. Tenta novamente!'); }
 }
 
@@ -697,53 +867,23 @@ function toast(msg) {
   setTimeout(() => el.classList.remove('show'), 4000);
 }
 
-// ===== OWNER CONFIG (set from Admin panel) =====
-function getOwnerConfig() {
-  try {
-    const cfg = JSON.parse(localStorage.getItem('mb_owner_cfg') || '{}');
-    return {
-      name:     cfg.name     || 'Domingos Cuna',
-      mpesa:    cfg.mpesa    || '+258 84 XXX XXXX',
-      emola:    cfg.emola    || '+258 86 XXX XXXX',
-      paypal:   cfg.paypal   || 'pagamentos@mindabooks.com',
-      banco:    cfg.banco    || 'BCI — IBAN: MZ59 0001 0000 0000 0000 0000 X',
-      nib:      cfg.nib      || 'NIB: 0001.0000.00000000000.X',
-      multicaixa: cfg.multicaixa || 'MCX-MB-2025',
-      cartao_link: cfg.cartao_link || '',
-    };
-  } catch(e) { return {}; }
-}
-
 // ===== PAYMENT METHODS CONFIG =====
 // ===== CART STATE =====
 // INIT
 detectRegion();
 renderBooks();
+loadCatalog();
 
 // ===== OWNER MODE =====
-const OWNER_PASS = 'minda2025'; // muda esta senha no Admin
 let ownerMode = false;
 
-function openOwnerLogin() {
-  document.getElementById('owner-login').classList.add('show');
-  document.getElementById('owner-pass-inp').value = '';
-  document.getElementById('owner-err').style.display = 'none';
-  setTimeout(() => document.getElementById('owner-pass-inp').focus(), 100);
-}
-
-function verifyOwner() {
-  const pass = document.getElementById('owner-pass-inp').value;
-  if (pass === OWNER_PASS) {
-    ownerMode = true;
-    document.getElementById('owner-login').classList.remove('show');
-    document.getElementById('owner-bar').classList.add('show');
-    document.body.style.paddingBottom = '44px';
-    toast('👑 Modo Dono activado! Podes testar a loja.');
-  } else {
-    document.getElementById('owner-err').style.display = 'block';
-    document.getElementById('owner-pass-inp').value = '';
-    document.getElementById('owner-pass-inp').focus();
-  }
+// Modo Dono: só mostra botões de teste e o estado dos links (que já são públicos). Sem segredos.
+function openOwnerLogin() { activateOwner(); }
+function activateOwner() {
+  ownerMode = true;
+  document.getElementById('owner-bar').classList.add('show');
+  document.body.style.paddingBottom = '44px';
+  toast('👑 Modo Dono activado.');
 }
 
 function exitOwner() {
@@ -771,13 +911,13 @@ function testHotmart() {
   </div>`;
   document.body.appendChild(overlay);
   const link = HOTMART_LINKS[1];
-  document.getElementById('ht-link-preview').textContent = link.includes('SEU') ? '❌ Não configurado' : '✅ ' + link;
+  document.getElementById('ht-link-preview').textContent = isValidLink(link) ? '✅ ' + link : '❌ Não configurado';
 }
 
 function checkLinks() {
   let html = '<div style="font-size:12px;font-weight:700;margin-bottom:10px;color:var(--teal)">Estado dos Links:</div>';
   BOOKS.forEach(b => {
-        const ht = HOTMART_LINKS[b.id].includes('SEU') ? '❌' : '✅';
+        const ht = isValidLink(HOTMART_LINKS[b.id]) ? '✅' : '❌';
     html += `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:11px">
       <span>${b.emoji}</span>
       <span style="flex:1;color:var(--text2)">${b.title}</span>
@@ -820,23 +960,11 @@ document.addEventListener('DOMContentLoaded', () => {
 <!-- OWNER MODE BAR -->
 <div id="owner-bar">
   <span class="owner-badge">👑 MODO DONO</span>
-  <span>Estás a ver a loja como cliente — os botões de compra estão em modo de teste.</span>
+  <span>Estás a ver a loja como cliente — os botões de compra abrem os links reais do Hotmart.</span>
   <button class="owner-btn" onclick="testHotmart()">🧪 Testar Hotmart</button>
   <button class="owner-btn" onclick="checkLinks()">🔗 Ver Links</button>
   <button class="owner-btn" style="margin-left:auto" onclick="exitOwner()">✕ Sair</button>
 </div>
 
-<!-- OWNER LOGIN -->
-<div id="owner-login">
-  <div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:28px;max-width:320px;width:100%;text-align:center">
-    <div style="font-size:32px;margin-bottom:12px">👑</div>
-    <div style="font-size:17px;font-weight:800;margin-bottom:6px">Acesso do Dono</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Introduz a senha para activar o Modo Dono</div>
-    <input id="owner-pass-inp" type="password" placeholder="Senha..." style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--text);outline:none;font-family:inherit;margin-bottom:10px" onkeypress="if(event.key==='Enter')verifyOwner()">
-    <button onclick="verifyOwner()" style="width:100%;background:var(--teal);color:#000;border:none;padding:11px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">Entrar</button>
-    <button onclick="document.getElementById('owner-login').classList.remove('show')" style="width:100%;background:none;border:1px solid var(--border);color:var(--muted);padding:9px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit">Cancelar</button>
-    <div id="owner-err" style="font-size:12px;color:#ff4466;margin-top:8px;display:none">Senha incorrecta. Tenta novamente.</div>
-  </div>
-</div>
 </body>
 </html>
