@@ -284,7 +284,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 (function(){
   var K={salt:'mb_auth_salt',hash:'mb_auth_hash',rsalt:'mb_auth_rsalt',rhash:'mb_auth_rhash',fails:'mb_auth_fails',lock:'mb_auth_lock'};
   var ITER=210000, MAXFAILS=5, IDLE_MS=15*60*1000;
-  var enc=new TextEncoder(), idleT=null, idleOn=false;
+  var enc=new TextEncoder(), idleT=null, idleOn=false, entered=false;
 
   function $(id){return document.getElementById(id);}
   function b64(buf){return btoa(String.fromCharCode.apply(null,new Uint8Array(buf)));}
@@ -326,6 +326,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     reset();
   }
   window.mbEnter=function(){
+    entered=true;
     $('admin-login-screen').style.display='none';
     sessionStorage.setItem('mb_auth_ts',Date.now());
     if(typeof init==='function')init();
@@ -400,11 +401,18 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   };
 
   // ---- arranque ----
-  window.addEventListener('load',function(){
-    show(configured()?'v-login':'v-setup');
-    var ts=+sessionStorage.getItem('mb_auth_ts')||0;
-    if(configured()&&ts&&Date.now()-ts<IDLE_MS)window.mbEnter();
-  });
+  // O PIN é pedido SEMPRE: ao abrir, ao recarregar e sempre que saíres da página/app e voltares.
+  function lockNow(){
+    if(!entered) return;
+    entered=false;
+    sessionStorage.removeItem('mb_auth_ts');
+    $('admin-login-screen').style.display='flex'; // tapa o painel de imediato
+    show('v-login');
+    location.reload();
+  }
+  document.addEventListener('visibilitychange',function(){ if(document.hidden) lockNow(); });
+  window.addEventListener('pageshow',function(e){ if(e.persisted) location.reload(); });
+  window.addEventListener('load',function(){ show(configured()?'v-login':'v-setup'); });
 })();
 </script>
 
