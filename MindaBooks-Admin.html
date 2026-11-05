@@ -1168,13 +1168,21 @@ function openOv(id){document.getElementById(id).classList.add('open');}
 function closeOv(id){document.getElementById(id).classList.remove('open');}
 
 async function saveSettings(){
-  // Sem dados financeiros: o Hotmart trata dos pagamentos. Guardar apaga os que já existiam neste navegador.
-  const cfg={name:document.getElementById('cfg-owner-name')?.value.trim()||''};
-  localStorage.setItem('mb_owner_cfg',JSON.stringify(cfg));
+  // O Hotmart trata dos pagamentos: aqui só guardamos contactos e nomes (neste navegador).
+  const val=id=>(document.getElementById(id)?.value||'').trim();
+  const clean=p=>p.replace(/[\s().-]/g,'');
+  const phoneOk=p=>!p||/^\+\d{8,15}$/.test(clean(p));
+  const email=val('cfg-email'),wa=val('cfg-wa'),waN=val('cfg-wa-notif');
+  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('⚠️ Email inválido');return;}
+  if(!phoneOk(wa)){toast('⚠️ WhatsApp de suporte: usa o formato +258 84 123 4567');return;}
+  if(!phoneOk(waN)){toast('⚠️ WhatsApp das notificações: usa o formato +258841234567');return;}
+  const cfg={name:val('cfg-owner-name'),store:val('cfg-name'),email:email,wa:wa?clean(wa):'',waNotif:waN?clean(waN):''};
+  try{localStorage.setItem('mb_owner_cfg',JSON.stringify(cfg));}
+  catch(e){toast('⚠️ Não foi possível guardar neste navegador');return;}
   const np=document.getElementById('cfg-newpass')?.value;
   if(np){
     const ok=(typeof mbChangePin==='function')?await mbChangePin(np):false;
-    if(!ok){toast('⚠️ O PIN deve ter pelo menos 8 caracteres');return;}
+    if(!ok){toast('⚠️ Dados guardados, mas o PIN deve ter pelo menos 8 caracteres');return;}
     document.getElementById('cfg-newpass').value='';
     toast('✅ Dados e novo PIN guardados!');
   } else {
@@ -1185,7 +1193,8 @@ async function saveSettings(){
 function loadOwnerConfig(){
   try{
     const cfg=JSON.parse(localStorage.getItem('mb_owner_cfg')||'{}');
-    if(cfg.name)document.getElementById('cfg-owner-name').value=cfg.name;
+    const set=(id,v)=>{const e=document.getElementById(id);if(e&&v)e.value=v;};
+    set('cfg-owner-name',cfg.name);set('cfg-name',cfg.store);set('cfg-email',cfg.email);set('cfg-wa',cfg.wa);set('cfg-wa-notif',cfg.waNotif);
   }catch(e){}
 }
 
