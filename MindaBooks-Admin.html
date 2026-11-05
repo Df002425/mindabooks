@@ -151,7 +151,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .s-input{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--text);outline:none;font-family:inherit;min-width:180px}
 .s-input:focus{border-color:var(--teal)}
 /* TOAST */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--border);color:var(--text);padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;display:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.5);border-left:3px solid var(--teal)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--border);color:var(--text);padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;display:none;white-space:normal;max-width:90vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.5);border-left:3px solid var(--teal)}
 .toast.show{display:block;animation:ti .3s ease}
 @keyframes ti{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 /* MODAL */
@@ -770,11 +770,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   </div>
   <div class="settings-card"><h3>🔐 Segurança</h3>
     <div class="settings-body">
-      <div style="margin-bottom:10px"><div class="f-group"><label>Nova Senha Admin</label><input class="f-input" id="cfg-newpass" type="password" placeholder="••••••••"></div></div>
+      <div style="margin-bottom:10px"><div class="f-group"><label>Novo PIN (mín. 8 caracteres)</label><input class="f-input" id="cfg-newpass" name="novo-pin-admin" type="password" autocomplete="new-password" placeholder="Novo PIN"></div></div>
+      <div style="margin-bottom:10px"><div class="f-group"><label>Repetir novo PIN</label><input class="f-input" id="cfg-newpass2" name="novo-pin-admin-2" type="password" autocomplete="new-password" placeholder="Repete o novo PIN"></div></div>
+      <button class="btn-new" onclick="changePinUI()" style="margin-bottom:6px">🔐 Alterar PIN</button>
       <div class="setting-row"><div class="setting-info"><strong>Notificações de Venda</strong><span>Receber alertas de novas vendas</span></div><button class="toggle on" id="tog-notif2" onclick="this.classList.toggle('on')"></button></div>
     </div>
   </div>
   <button class="btn-new" onclick="saveSettings()">💾 Guardar Todos os Dados</button>
+  <div id="save-status" style="margin:10px 0 24px;font-size:13px;line-height:1.5"></div>
 </div>
 
 </div><!-- /main -->
@@ -1167,30 +1170,39 @@ function toast(msg){const el=document.getElementById('toast');el.textContent=msg
 function openOv(id){document.getElementById(id).classList.add('open');}
 function closeOv(id){document.getElementById(id).classList.remove('open');}
 
+function setStatus(msg,ok){const e=document.getElementById('save-status');if(e){e.style.color=ok?'#00d9a0':'#ff4466';e.textContent=msg;}toast(msg);}
+function normPhone(p){
+  p=(p||'').replace(/[\s().-]/g,'');
+  if(p.startsWith('00'))p='+'+p.slice(2);
+  if(/^8\d{8}$/.test(p))p='+258'+p; // número moçambicano sem indicativo
+  return p;
+}
 async function saveSettings(){
   // O Hotmart trata dos pagamentos: aqui só guardamos contactos e nomes (neste navegador).
   const val=id=>(document.getElementById(id)?.value||'').trim();
-  const clean=p=>p.replace(/[\s().-]/g,'');
-  const phoneOk=p=>!p||/^\+\d{8,15}$/.test(clean(p));
-  const email=val('cfg-email'),wa=val('cfg-wa'),waN=val('cfg-wa-notif');
-  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('⚠️ Email inválido');return;}
-  if(!phoneOk(wa)){toast('⚠️ WhatsApp de suporte: usa o formato +258 84 123 4567');return;}
-  if(!phoneOk(waN)){toast('⚠️ WhatsApp das notificações: usa o formato +258841234567');return;}
-  const cfg={name:val('cfg-owner-name'),store:val('cfg-name'),email:email,wa:wa?clean(wa):'',waNotif:waN?clean(waN):''};
+  const email=val('cfg-email'),wa=normPhone(val('cfg-wa')),waN=normPhone(val('cfg-wa-notif'));
+  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){setStatus('⚠️ Não guardado: o email não é válido.',false);return;}
+  if(wa&&!/^\+\d{8,15}$/.test(wa)){setStatus('⚠️ Não guardado: o WhatsApp de suporte deve ter o formato +258841234567.',false);return;}
+  if(waN&&!/^\+\d{8,15}$/.test(waN)){setStatus('⚠️ Não guardado: o WhatsApp das notificações deve ter o formato +258841234567.',false);return;}
+  const cfg={name:val('cfg-owner-name'),store:val('cfg-name'),email:email,wa:wa,waNotif:waN};
   try{localStorage.setItem('mb_owner_cfg',JSON.stringify(cfg));}
-  catch(e){toast('⚠️ Não foi possível guardar neste navegador');return;}
-  const np=document.getElementById('cfg-newpass')?.value;
-  if(np){
-    const ok=(typeof mbChangePin==='function')?await mbChangePin(np):false;
-    if(!ok){toast('⚠️ Dados guardados, mas o PIN deve ter pelo menos 8 caracteres');return;}
-    document.getElementById('cfg-newpass').value='';
-    toast('✅ Dados e novo PIN guardados!');
-  } else {
-    toast('✅ Dados guardados!');
-  }
+  catch(e){setStatus('⚠️ Não foi possível guardar neste navegador (modo privado ou armazenamento bloqueado).',false);return;}
+  const back=(id,v)=>{const e=document.getElementById(id);if(e&&v)e.value=v;};
+  back('cfg-wa',wa);back('cfg-wa-notif',waN);
+  setStatus('✅ Dados guardados às '+new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'})+'.',true);
+}
+async function changePinUI(){
+  const a=document.getElementById('cfg-newpass')?.value||'',b=document.getElementById('cfg-newpass2')?.value||'';
+  if(a.length<8){setStatus('⚠️ O novo PIN deve ter pelo menos 8 caracteres.',false);return;}
+  if(a!==b){setStatus('⚠️ Os dois PINs não são iguais.',false);return;}
+  const ok=(typeof mbChangePin==='function')?await mbChangePin(a):false;
+  if(!ok){setStatus('⚠️ Não foi possível alterar o PIN.',false);return;}
+  document.getElementById('cfg-newpass').value='';document.getElementById('cfg-newpass2').value='';
+  setStatus('✅ PIN alterado. Usa-o da próxima vez que entrares.',true);
 }
 
 function loadOwnerConfig(){
+  ['cfg-newpass','cfg-newpass2'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   try{
     const cfg=JSON.parse(localStorage.getItem('mb_owner_cfg')||'{}');
     const set=(id,v)=>{const e=document.getElementById(id);if(e&&v)e.value=v;};
